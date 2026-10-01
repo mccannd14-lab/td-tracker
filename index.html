@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TD Tracker Ireland — Prototype</title>
+<style>
+:root{--navy:#102d46;--blue:#1769aa;--bg:#f4f6f8;--card:#fff;--muted:#667085;--border:#dfe4ea;--green:#157347;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:#17202a}
+header{background:linear-gradient(135deg,#102d46,#1769aa);color:#fff;padding:18px 18px 34px}
+.wrap{max-width:980px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center}.logo{font-weight:800;font-size:22px}.badge{font-size:12px;border:1px solid #ffffff55;padding:7px 10px;border-radius:99px}
+.hero{padding:45px 0 10px}.hero h1{font-size:42px;line-height:1.05;margin:0 0 12px}.hero p{font-size:18px;opacity:.9;max-width:650px}
+main{padding:24px 18px 60px}.bar{background:#fff;border:1px solid var(--border);padding:16px;border-radius:14px;margin-top:-42px;position:relative;box-shadow:0 8px 25px #00000010}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:7px}select,input{width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:#fff}
+.section{margin-top:27px}.section h2{margin:0 0 13px;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:17px}
+.td{cursor:pointer;transition:.15s}.td:hover{transform:translateY(-2px);box-shadow:0 5px 16px #0000000d}
+.initial{width:46px;height:46px;border-radius:50%;background:#e8f0f7;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);margin-bottom:12px}
+h3{margin:0 0 5px}.muted{color:var(--muted);font-size:14px}.pill{display:inline-block;margin-top:11px;padding:5px 9px;border-radius:99px;background:#eef2f6;font-size:12px}
+.search{margin-bottom:12px}.vote{padding:15px 0;border-bottom:1px solid var(--border)}.vote:last-child{border:0}.vhead{display:flex;justify-content:space-between;gap:12px}.date{font-size:13px;color:var(--muted)}.result{font-size:13px;color:var(--muted);margin-top:4px}.votes{margin-top:10px;display:none}.row{display:flex;justify-content:space-between;padding:7px 0;font-size:14px;border-top:1px solid #eef0f2}.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}.absent{color:var(--muted);font-weight:700}
+button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;font-size:13px}
+.source{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
+footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-size:12px;line-height:1.5}
+@media(max-width:720px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:34px}.vhead{display:block}.vhead button{margin-top:9px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+
+.profile-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:20px;padding-top:18px;border-top:1px solid var(--border)}
+.secondary{background:#34495e;margin-left:7px}
+#profile{display:none;margin-top:27px}
+@media(max-width:600px){.profile-grid{grid-template-columns:1fr}.secondary{margin-left:0;margin-top:8px;display:inline-block}}
+
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.stat{background:#f7f9fb;border:1px solid var(--border);border-radius:10px;padding:12px}.stat strong{display:block;font-size:20px;margin-top:3px}
+.profile-tabs{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}.tab{background:#eef2f6;color:#344054}.tab.active{background:var(--blue);color:#fff}
+.activity{margin-top:15px}.activity div{padding:10px 0;border-bottom:1px solid var(--border)}
+@media(max-width:600px){.profile-stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<div class="top"><div class="logo">TD Tracker</div><div class="badge">Prototype</div></div>
+<div class="hero"><h1>How did your TD vote?</h1><p>Find your representatives, explore recorded Dáil votes and follow the official parliamentary record.</p></div>
+</div>
+</header>
+
+<main class="wrap">
+<div class="bar">
+<label for="constituency">Your constituency</label>
+<select id="constituency" onchange="changeConstituency(this.value)">
+<option value="north">Tipperary North</option><option value="south">Tipperary South</option><option value="all">All Tipperary TDs</option>
+</select>
+</div>
+
+<div id="apiStatus" class="small" style="margin-top:14px">Connecting to the official Oireachtas data…</div>
+<div class="section">
+<h2>Your TDs</h2>
+<div id="tds" class="grid"></div>
+</div>
+
+<div id="profile" class="section"></div>
+
+<div class="section">
+<h2>Recent votes</h2>
+<input id="search" class="search" placeholder="Search Bills or votes..." oninput="renderVotes()">
+<div id="votes" class="card"></div>
+</div>
+
+<div class="source">
+<strong>Data note:</strong> This prototype is designed to use the official Houses of the Oireachtas record as its source. Production pages should link each vote directly to its official division/result page rather than relying on third-party summaries.
+</div>
+</main>
+
+<footer>
+TD Tracker is an independent civic-information prototype. It does not rate, recommend or endorse candidates or parties.
+</footer>
+
+<script>
+let tds=[];
+let votes=[];
+let apiStatus="Connecting to the official Oireachtas data…";
+const API="/api";
+const HOUSE=34;
+
+function unwrapMember(x){
+  const m=x.member||x, memberships=m.memberships||[];
+  const active=memberships.filter(z=>!(z.membership?.dateRange?.end)).pop()?.membership||memberships.at(-1)?.membership||{};
+  return {name:m.fullName||m.showAs||"Unknown member",
+    party:active.parties?.at(-1)?.party?.showAs||"Independent / not listed",
+    constituency:active.represents?.[0]?.represent?.showAs||"Constituency not listed",
+    email:m.email||m.contactDetails?.email||"", role:"TD",
+    years:"Current Dáil member", memberCode:m.memberCode||m.id||""};
+}
+function cleanDivision(x){
+  const d=x.division||x;
+  const title=d.debateSection?.showAs || d.divisionTitle || d.title || d.businessItem?.showAs || "Dáil division";
+  const date=d.date||d.divisionDate||d.time||"";
+  const result=d.result?.showAs || d.result || d.outcome || "";
+  const members=d.members || [];
+  return {raw:d,title,date,result,yes,no,members};
+}
+
+function memberVoteFor(division, member){
+  const rows=division.members||[];
+  const target=(member.memberCode||"").toString().toLowerCase();
+  const name=member.name.toLowerCase();
+  const row=rows.find(r=>{
+    const code=(r.memberCode||r.member?.memberCode||r.id||"").toString().toLowerCase();
+    const n=(r.member?.fullName||r.member?.showAs||r.fullName||r.name||"").toLowerCase();
+    return (target && code===target) || (n && n===name);
+  });
+  if(!row)return "Not available in response";
+  const raw=(row.vote||row.choice||row.result||row.status||"").toString().toLowerCase();
+  if(raw.includes("yes")||raw.includes("tá")||raw.includes("ta"))return "Tá";
+  if(raw.includes("no")||raw.includes("níl")||raw.includes("nil"))return "Níl";
+  if(raw.includes("abst"))return "Abstained";
+  if(raw.includes("absent"))return "Absent";
+  return row.vote||row.choice||row.result||row.status||"Recorded";
+}
+
+async function loadLiveData(){
+ try{
+  const [mr,vr]=await Promise.all([
+    fetch(`${API}/members?skip=0&limit=500`),
+    fetch(`${API}/votes?skip=0&limit=50&date_start=2025-01-01&date_end=2026-10-01`)
+  ]);
+  if(!mr.ok||!vr.ok) throw new Error("API request failed");
+  const md=await mr.json(),vd=await vr.json();
+  tds=(md.results||[]).map(unwrapMember);
+  votes=(vd.results||[]).map(cleanDivision).filter(v=>v.title).slice(0,50);
+  apiStatus=`Live Oireachtas data connected · ${tds.length} Dáil members · ${votes.length} recent divisions`;
+ }catch(e){
+  apiStatus="Live data could not load in this local file. It will work when hosted on HTTPS with API access.";
+ }
+ renderAllLive();
+}
+let selectedTD=null;
+
+function initials(name){
+return name.split(" ").map(x=>x.replace(/[^A-Za-zÁÉÍÓÚáéíóú]/g,"")[0]).filter(Boolean).slice(0,2).join("");
+}
+
+function renderTDs(){
+ const selected=document.getElementById("constituency").value;
+ let list=tds;
+ if(selected==="north")list=tds.filter(t=>/Tipperary North/i.test(t.constituency));
+ if(selected==="south")list=tds.filter(t=>/Tipperary South/i.test(t.constituency));
+ if(selected==="all")list=tds.filter(t=>/Tipperary/i.test(t.constituency));
+ if(!list.length&&tds.length)list=tds;
+ document.getElementById("tds").innerHTML=list.slice(0,20).map(t=>`
+ <div class="card td" onclick="showProfile('${t.name.replace(/'/g,"\\'")}')"><div class="initial">${initials(t.name)}</div>
+ <h3>${t.name} TD</h3><div class="muted">${t.party}</div><span class="pill">${t.constituency}</span>
+ <div style="margin-top:13px"><button>View profile</button></div></div>`).join("")||"<div class='muted'>Waiting for live member data…</div>";
+}
+function renderVotes(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const filtered=votes.filter(v=>(v.title+" "+v.date).toLowerCase().includes(q));
+ document.getElementById("votes").innerHTML=filtered.map((v,i)=>`
+ <div class="vote"><div class="vhead"><div><strong>${v.title}</strong>
+ <div class="date">${v.date||"Date not supplied"}</div>
+ <div class="result">${v.result?("Result: "+v.result):"Official division record"}</div></div>
+ <button onclick="toggleVote(${i})">View TD votes</button></div>
+ <div id="vote${i}" class="votes">
+ ${tds.filter(t=>/Tipperary/i.test(t.constituency)).map(t=>{
+   const mv=memberVoteFor(v,t);
+   const cls=mv==="Tá"?"yes":mv==="Níl"?"no":mv==="Absent"||mv==="Abstained"?"absent":"";
+   return `<div class="row"><span>${t.name}</span><span class="${cls}">${mv}</span></div>`;
+ }).join("")}
+ <div class="source"><strong>Official source:</strong> This division is loaded from the Houses of the Oireachtas data feed. If an individual member vote is not included in the API response, the site displays “Not available” rather than guessing.</div>
+ <a class="link" href="https://www.oireachtas.ie/en/debates/votes/" target="_blank">Open official Oireachtas votes</a>
+ </div></div>`).join("")||"<div class='muted'>No matching live divisions.</div>";
+}
+
+function toggleVote(i){const e=document.getElementById("vote"+i);e.style.display=e.style.display==="block"?"none":"block";}
+function changeConstituency(v){renderTDs();renderVotes();}
+function renderAllLive(){renderTDs();renderVotes();const e=document.getElementById("apiStatus");if(e)e.textContent=apiStatus;}
+
+renderTDs();renderVotes();loadLiveData();
+</script>
+</body>
+</html>
