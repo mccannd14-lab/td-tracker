@@ -1,18 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TD Tracker</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
+      margin: 0;
       background: #f4f6f8;
       color: #222;
     }
@@ -20,115 +15,30 @@
     header {
       background: #075985;
       color: white;
-      padding: 22px 16px;
+      padding: 25px;
       text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 30px;
-    }
-
-    header p {
-      margin: 8px 0 0;
-      font-size: 16px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px 15px;
     }
 
     .box {
       background: white;
+      margin: 20px;
+      padding: 20px;
       border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    select {
-      width: 100%;
-      padding: 13px;
-      font-size: 16px;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      background: white;
-    }
-
-    h2 {
-      margin-top: 0;
-      color: #075985;
     }
 
     .td {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 12px;
-      background: #fff;
-    }
-
-    .td-name {
-      font-size: 19px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .td-info {
-      color: #666;
-      font-size: 14px;
-    }
-
-    .vote {
+      padding: 15px 0;
       border-bottom: 1px solid #ddd;
-      padding: 14px 0;
     }
 
-    .vote:last-child {
-      border-bottom: none;
-    }
-
-    .vote-title {
+    .name {
+      font-size: 20px;
       font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .vote-date {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 6px;
-      background: #eee;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .loading {
-      color: #666;
     }
 
     .error {
-      color: #b91c1c;
-      background: #fee2e2;
-      padding: 12px;
-      border-radius: 8px;
-    }
-
-    .source {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #666;
-    }
-
-    .source a {
-      color: #075985;
+      color: #b00020;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -140,202 +50,86 @@
   <p>How did your TD vote?</p>
 </header>
 
-<div class="container">
-
-  <div class="box">
-    <h2>Your constituency</h2>
-
-    <select id="constituency">
-      <option value="">Loading constituencies...</option>
-    </select>
-  </div>
-
-  <div class="box">
-    <h2>Your TDs</h2>
-    <div id="tdList" class="loading">
-      Loading TDs...
-    </div>
-  </div>
-
-  <div class="box">
-    <h2>Recent Dáil votes</h2>
-    <div id="voteList" class="loading">
-      Loading votes...
-    </div>
-
-    <div class="source">
-      Data supplied from the
-      <a href="https://www.oireachtas.ie/en/open-data/" target="_blank">
-        Houses of the Oireachtas
-      </a>.
-    </div>
-  </div>
-
+<div class="box">
+  <h2>Your TDs</h2>
+  <div id="status">Loading TD data...</div>
+  <div id="tds"></div>
 </div>
 
 <script>
 
-let members = [];
-let divisions = [];
+async function loadTDs() {
 
+  const status = document.getElementById("status");
+  const tds = document.getElementById("tds");
 
-/* -----------------------------
-   LOAD TDs
------------------------------ */
+  try {
 
-async function loadMembers() {
+    const response = await fetch("/api/members");
 
-  const response = await fetch("/api/members");
-
-  if (!response.ok) {
-    throw new Error("Could not load TD data");
-  }
-
-  const data = await response.json();
-
-  members = data.results || [];
-
-  buildConstituencies();
-}
-
-
-/* -----------------------------
-   FIND CONSTITUENCY
------------------------------ */
-
-function getConstituencies(member) {
-
-  const results = [];
-
-  const memberships = member.memberships || [];
-
-  memberships.forEach(membership => {
-
-    const organization = membership.organization || {};
-
-    const name =
-      organization.showAs ||
-      organization.name ||
-      membership.house ||
-      "";
-
-    if (name && !results.includes(name)) {
-      results.push(name);
+    if (!response.ok) {
+      throw new Error("API returned HTTP " + response.status);
     }
 
-  });
+    const data = await response.json();
 
-  return results;
-}
+    console.log(data);
 
+    const results = data.results || [];
 
-/* -----------------------------
-   BUILD CONSTITUENCY DROPDOWN
------------------------------ */
+    if (results.length === 0) {
+      status.innerHTML = "API connected, but no TDs were returned.";
+      return;
+    }
 
-function buildConstituencies() {
+    status.innerHTML =
+      "API connected successfully. " + results.length + " TD records found.";
 
-  const select = document.getElementById("constituency");
+    tds.innerHTML = results.slice(0, 20).map(item => {
 
-  const constituencySet = new Set();
+      const member = item.member || item;
 
-  members.forEach(member => {
+      const name =
+        member.fullName ||
+        ((member.firstName || "") + " " + (member.lastName || "")).trim() ||
+        "Unknown TD";
 
-    getConstituencies(member).forEach(name => {
-      constituencySet.add(name);
-    });
-
-  });
-
-  let constituencies = Array.from(constituencySet).sort();
-
-  select.innerHTML = "";
-
-  const allOption = document.createElement("option");
-  allOption.value = "";
-  allOption.textContent = "All constituencies";
-  select.appendChild(allOption);
-
-  constituencies.forEach(name => {
-
-    const option = document.createElement("option");
-
-    option.value = name;
-    option.textContent = name;
-
-    select.appendChild(option);
-
-  });
-
-  /* Try to select Tipperary automatically */
-  const tipperary = constituencies.find(
-    name => name.toLowerCase().includes("tipperary")
-  );
-
-  if (tipperary) {
-    select.value = tipperary;
-  }
-
-  displayTDs();
-}
-
-
-/* -----------------------------
-   DISPLAY TDs
------------------------------ */
-
-function displayTDs() {
-
-  const selected =
-    document.getElementById("constituency").value;
-
-  const list = document.getElementById("tdList");
-
-  let filtered = members;
-
-  if (selected) {
-
-    filtered = members.filter(member =>
-      getConstituencies(member).includes(selected)
-    );
-
-  }
-
-  if (!filtered.length) {
-
-    list.innerHTML =
-      "<p>No TDs found for this constituency.</p>";
-
-    return;
-  }
-
-  list.innerHTML = filtered.map(member => {
-
-    const name =
-      member.fullName ||
-      `${member.firstName || ""} ${member.lastName || ""}`;
-
-    return `
-      <div class="td">
-        <div class="td-name">${escapeHtml(name)}</div>
-        <div class="td-info">
-          TD • Dáil Éireann
+      return `
+        <div class="td">
+          <div class="name">${escapeHtml(name)}</div>
+          <div>TD • Dáil Éireann</div>
         </div>
-      </div>
-    `;
+      `;
 
-  }).join("");
+    }).join("");
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.innerHTML =
+      '<div class="error">ERROR: ' +
+      escapeHtml(error.message) +
+      '</div>';
+
+  }
 
 }
 
+function escapeHtml(text) {
 
-/* -----------------------------
-   LOAD VOTES
------------------------------ */
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
-async function loadVotes() {
+}
 
-  const response = await fetch("/api/votes");
+loadTDs();
 
-  if (!response.ok) {
-    throw
+</script>
+
+</body>
+</html>
