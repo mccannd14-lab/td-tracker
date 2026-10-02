@@ -15,7 +15,7 @@ main{padding:24px 18px 60px}.bar{background:#fff;border:1px solid var(--border);
 label{font-size:13px;color:var(--muted);display:block;margin-bottom:7px}select,input{width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:#fff}
 .section{margin-top:27px}.section h2{margin:0 0 13px;font-size:22px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:17px}
 .td{cursor:pointer;transition:.15s}.td:hover{transform:translateY(-2px);box-shadow:0 5px 16px #0000000d}
-.initial{width:46px;height:46px;border-radius:50%;background:#e8f0f7;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);margin-bottom:12px}
+.initial{width:46px;height:46px;border-radius:50%;background:#e8f0f7;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);margin-bottom:12px}.td-photo{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin-bottom:12px;background:#e8f0f7}.profile-photo{width:110px;height:110px;border-radius:50%;object-fit:cover;display:block;margin:0 0 14px;background:#e8f0f7}
 h3{margin:0 0 5px}.muted{color:var(--muted);font-size:14px}.pill{display:inline-block;margin-top:11px;padding:5px 9px;border-radius:99px;background:#eef2f6;font-size:12px}
 .search{margin-bottom:12px}.vote{padding:15px 0;border-bottom:1px solid var(--border)}.vote:last-child{border:0}.vhead{display:flex;justify-content:space-between;gap:12px}.date{font-size:13px;color:var(--muted)}.result{font-size:13px;color:var(--muted);margin-top:4px}.votes{margin-top:10px;display:none}.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:14px;border-top:1px solid #eef0f2}.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}.absent{color:var(--muted);font-weight:700}
 button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;font-size:13px}
@@ -90,13 +90,27 @@ function unwrapMember(x){
      if(name&&!constituencies.includes(name)) constituencies.push(name);
    });
  }catch(e){}
+ const photo =
+   m.image?.uri ||
+   m.image?.url ||
+   m.image?.href ||
+   m.photo?.uri ||
+   m.photo?.url ||
+   m.photo?.href ||
+   m.imageUrl ||
+   m.photoUrl ||
+   m.profileImage ||
+   m.profilePhoto ||
+   "";
+
  return{
    name:m.fullName||m.showAs||"Unknown member",
    party,
    constituency:constituencies[0]||"Constituency not listed",
    constituencies,
    memberCode:m.memberCode||m.id||"",
-   email:m.email||m.contactDetails?.email||"",
+   email:m.email||m.contactDetails?.email||m.contact?.email||"",
+   photo,
    role:"TD"
  };
 }
@@ -208,7 +222,7 @@ function memberVoteFor(division,member){
 
 /* Link to the official Dáil debate for the division date */
 function officialDebateUrl(date){
- const match=String(date||"").match(/(\\d{4})-(\\d{2})-(\\d{2})/);
+ const match=String(date||"").match(/(\d{4})-(\d{2})-(\d{2})/);
  if(!match)return"https://www.oireachtas.ie/en/debates/";
  return`https://www.oireachtas.ie/en/debates/debate/dail/${match[1]}-${match[2]}-${match[3]}/`;
 }
@@ -260,13 +274,27 @@ function initials(name){
  return String(name||"").split(" ").map(x=>x.replace(/[^A-Za-zÁÉÍÓÚáéíóú]/g,"")[0]).filter(Boolean).slice(0,2).join("");
 }
 
+function safePhotoUrl(url){
+ const s=String(url||"").trim();
+ return /^https?:\\/\\//i.test(s) ? s : "";
+}
+
+function memberPhotoMarkup(t, profile=false){
+ const photo=safePhotoUrl(t.photo);
+ const cls=profile?"profile-photo":"td-photo";
+ if(photo){
+   return `<img class="${cls}" src="${photo}" alt="${t.name} TD" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none">${initials(t.name)}</div>`;
+ }
+ return `<div class="initial${profile ? '" style="width:110px;height:110px;font-size:30px;margin-bottom:14px' : '"'}>${initials(t.name)}</div>`;
+}
+
 /* TD CARDS + PROFILE */
 function renderTDs(){
  const list=getDisplayedTDs();
  document.getElementById("tds").innerHTML=
  list.map((t,i)=>`
    <div class="card td" onclick="showProfile(${i})">
-     <div class="initial">${initials(t.name)}</div>
+     ${memberPhotoMarkup(t)}
      <h3>${t.name} TD</h3>
      <div class="muted">${t.party}</div>
      <span class="pill">${t.constituency}</span>
@@ -286,6 +314,7 @@ function showProfile(index){
  const recentVotes=votes.slice(0,20);
 
  profile.innerHTML=`
+   ${memberPhotoMarkup(t,true)}
    <h2 style="margin:0 0 6px">${t.name} TD</h2>
    <div class="muted">${t.party}</div>
    <span class="pill">${t.constituency}</span>
@@ -293,7 +322,7 @@ function showProfile(index){
    <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eef0f2">
      <h3>Member details</h3>
      <div class="row"><span>Constituency</span><strong>${t.constituency}</strong></div>
-     ${t.email ? `<div class="row"><span>Email</span><a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700">${t.email}</a></div>` : `<div class="row"><span>Email</span><span class="muted">Not supplied</span></div>`}
+     ${t.email ? `<div class="row"><span>Email</span><a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700">${t.email}</a></div>` : `<div class="row"><span>Email</span><span class="muted">Not supplied by the Oireachtas data feed</span></div>`}
      <div class="row"><span>Role</span><span>${t.role}</span></div>
    </div>
 
@@ -310,9 +339,6 @@ function showProfile(index){
            <div class="row" style="border-top:0;padding:0">
              <span>${v.title}</span>
              <span class="${cls}">${mv}</span>
-           </div>
-           <div class="muted" style="margin-top:5px;line-height:1.4">
-             ${v.title && v.title!=="Dáil division" ? v.title : "See the official debate record for the wording."}
            </div>
            <a class="link" style="display:inline-block;margin-top:7px" href="${officialDebateUrl(v.date)}" target="_blank">Open official debate</a>
          </div>
