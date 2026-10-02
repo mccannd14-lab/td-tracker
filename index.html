@@ -1,4 +1,4 @@
-⁸<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -106,9 +106,6 @@
   <p>How did your TD vote?</p>
 </header>
 
-
-<!-- CONSTITUENCY -->
-
 <div class="box">
 
   <h2>Your constituency</h2>
@@ -118,9 +115,6 @@
   </select>
 
 </div>
-
-
-<!-- TDs -->
 
 <div class="box">
 
@@ -134,7 +128,6 @@
 
 </div>
 
-
 <div class="box">
 
   <h2>Recent Dáil votes</h2>
@@ -145,23 +138,26 @@
 
   <div class="source">
     Data supplied from the
-    <a
-      href="https://www.oireachtas.ie/en/open-data/"
-      target="_blank">
+    <a href="https://www.oireachtas.ie/en/open-data/" target="_blank">
       Houses of the Oireachtas
     </a>.
   </div>
 
 </div>
 
-
 <script>
+
+let allMembers = [];
+
+
+/* LOAD TD DATA */
 
 async function loadTDs() {
 
-  const status = document.getElementById("status");
-  const tds = document.getElementById("tds");
-  const constituency =
+  const status =
+    document.getElementById("status");
+
+  const constituencySelect =
     document.getElementById("constituency");
 
   try {
@@ -178,71 +174,64 @@ async function loadTDs() {
     const data =
       await response.json();
 
-    const results =
+    allMembers =
       data.results || [];
 
-    if (results.length === 0) {
-
-      status.innerHTML =
-        "No TDs were returned.";
-
-      return;
+    if (!allMembers.length) {
+      throw new Error("No TD records returned");
     }
 
 
-    /* --------------------------------
-       FIND CONSTITUENCIES
-    -------------------------------- */
+    /* FIND CONSTITUENCIES */
 
     const constituencies =
       new Set();
 
 
-    results.forEach(item => {
+    allMembers.forEach(result => {
 
       const member =
-        item.member || item;
+        result.member || {};
 
       const memberships =
         member.memberships || [];
 
 
-      memberships.forEach(item => {
+      memberships.forEach(wrapper => {
 
-        /*
-          Oireachtas data normally places
-          constituency information under
-          membership.organization.
-        */
+        const membership =
+          wrapper.membership || {};
+
 
         const represents =
-  item.represents || [];
+          membership.represents || [];
 
-represents.forEach(rep => {
 
-  const constituency =
-    rep.represent || {};
+        represents.forEach(rep => {
 
-  if (constituency.showAs) {
+          const constituency =
+            rep.represent || {};
 
-    constituencies.add(
-      constituency.showAs
-    );
 
-  }
+          if (constituency.showAs) {
 
-});
+            constituencies.add(
+              constituency.showAs
+            );
+
+          }
+
+        });
 
       });
 
     });
 
 
-    /* --------------------------------
-       BUILD DROPDOWN
-    -------------------------------- */
+    /* BUILD DROPDOWN */
 
-    constituency.innerHTML = "";
+    constituencySelect.innerHTML = "";
+
 
     const allOption =
       document.createElement("option");
@@ -252,7 +241,7 @@ represents.forEach(rep => {
     allOption.textContent =
       "All constituencies";
 
-    constituency.appendChild(
+    constituencySelect.appendChild(
       allOption
     );
 
@@ -268,16 +257,14 @@ represents.forEach(rep => {
 
         option.textContent = name;
 
-        constituency.appendChild(
+        constituencySelect.appendChild(
           option
         );
 
       });
 
 
-    /* --------------------------------
-       AUTOMATICALLY SELECT TIPPERARY
-    -------------------------------- */
+    /* SELECT TIPPERARY */
 
     const tipperary =
       Array.from(constituencies)
@@ -289,29 +276,22 @@ represents.forEach(rep => {
 
     if (tipperary) {
 
-      constituency.value =
+      constituencySelect.value =
         tipperary;
 
     }
 
 
-    /* --------------------------------
-       SHOW TDs
-    -------------------------------- */
-
-    displayTDs(results);
+    status.textContent =
+      allMembers.length +
+      " TD records found.";
 
 
-    /* --------------------------------
-       DROPDOWN CHANGE
-    -------------------------------- */
+    displayTDs();
 
-    constituency.onchange = function() {
 
-      displayTDs(results);
-
-    };
-
+    constituencySelect.onchange =
+      displayTDs;
 
   } catch (error) {
 
@@ -328,48 +308,56 @@ represents.forEach(rep => {
 }
 
 
-/* --------------------------------
-   DISPLAY TDs
--------------------------------- */
+/* DISPLAY TDs */
 
-function displayTDs(results) {
+function displayTDs() {
 
-  const tds =
+  const list =
     document.getElementById("tds");
 
-  const constituency =
-    document.getElementById("constituency");
-
   const selected =
-    constituency.value;
+    document.getElementById("constituency")
+      .value;
 
 
   let filtered =
-    results;
+    allMembers;
 
 
   if (selected) {
 
     filtered =
-      results.filter(item => {
+      allMembers.filter(result => {
 
         const member =
-          item.member || item;
+          result.member || {};
 
         const memberships =
           member.memberships || [];
 
 
-        return memberships.some(item => {
+        return memberships.some(wrapper => {
 
-          const organization =
-            item.organization || {};
+          const membership =
+            wrapper.membership || {};
 
 
-          return (
-            organization.showAs === selected ||
-            organization.name === selected
-          );
+          const represents =
+            membership.represents || [];
+
+
+          return represents.some(rep => {
+
+            const constituency =
+              rep.represent || {};
+
+
+            return (
+              constituency.showAs ===
+              selected
+            );
+
+          });
 
         });
 
@@ -378,20 +366,21 @@ function displayTDs(results) {
   }
 
 
-  if (filtered.length === 0) {
+  if (!filtered.length) {
 
-    tds.innerHTML =
+    list.innerHTML =
       "<p>No TDs found for this constituency.</p>";
 
     return;
+
   }
 
 
-  tds.innerHTML =
-    filtered.map(item => {
+  list.innerHTML =
+    filtered.map(result => {
 
       const member =
-        item.member || item;
+        result.member || {};
 
 
       const name =
@@ -422,30 +411,21 @@ function displayTDs(results) {
 }
 
 
-/* --------------------------------
-   SAFELY DISPLAY TEXT
--------------------------------- */
+/* SAFETY */
 
 function escapeHtml(text) {
 
   return String(text)
-
     .replace(/&/g, "&amp;")
-
     .replace(/</g, "&lt;")
-
     .replace(/>/g, "&gt;")
-
     .replace(/"/g, "&quot;")
-
     .replace(/'/g, "&#039;");
 
 }
 
 
-/* --------------------------------
-   START
--------------------------------- */
+/* START */
 
 loadTDs();
 
