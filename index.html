@@ -155,6 +155,7 @@ select {
 <p>How did your TD vote?</p>
 </header>
 
+
 <div class="box">
 
 <h2>Your constituency</h2>
@@ -285,10 +286,12 @@ async function loadTDs() {
       await fetch("/api/members");
 
     if (!response.ok) {
+
       throw new Error(
         "TD API returned HTTP " +
         response.status
       );
+
     }
 
     const data =
@@ -300,9 +303,11 @@ async function loadTDs() {
         : [];
 
     if (!allMembers.length) {
+
       throw new Error(
         "No TD records were returned"
       );
+
     }
 
 
@@ -544,7 +549,7 @@ function getMemberCode(member) {
 
 
 /* ==============================
-   GET TD VOTE
+   FIND TD VOTE
 ============================== */
 
 function getTDVote(division, member) {
@@ -561,53 +566,51 @@ function getTDVote(division, member) {
     division.tallies || {};
 
 
+  /*
+    Oireachtas structure:
+
+    tallies
+      └── tallies
+          ├── showAs
+          ├── tally
+          └── members
+              └── member
+  */
+
+
   let tallyList =
-    tallies.tallies ||
-    tallies;
+    tallies.tallies || [];
 
 
   if (!Array.isArray(tallyList)) {
 
-    if (
-      tallyList &&
-      typeof tallyList === "object"
-    ) {
-
-      tallyList =
-        Object.values(tallyList);
-
-    } else {
-
-      tallyList = [];
-
-    }
+    return "Not recorded";
 
   }
 
 
   for (const item of tallyList) {
 
-    const tally =
-      item && item.tally
-        ? item.tally
-        : item;
-
-
-    if (!tally) {
+    if (!item) {
       continue;
     }
 
 
+    /*
+      IMPORTANT:
+      item.tally is the NUMBER of votes.
+      The vote name is item.showAs.
+    */
+
     const voteName =
-      tally.showAs ||
-      tally.name ||
-      tally.label ||
+      item.showAs ||
+      item.name ||
+      item.label ||
       "";
 
 
     let members =
-      tally.members ||
-      [];
+      item.members || [];
 
 
     if (!Array.isArray(members)) {
@@ -619,6 +622,11 @@ function getTDVote(division, member) {
 
 
     for (const voteMember of members) {
+
+      if (!voteMember) {
+        continue;
+      }
+
 
       const m =
         voteMember.member ||
