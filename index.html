@@ -69,6 +69,56 @@ footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-s
   .source{width:100%!important;max-width:100%!important;overflow-wrap:anywhere!important}
   .link,button{max-width:100%!important;white-space:normal!important}
 }
+
+/* HARD FIX: profile must never inherit a narrow grid/flex column */
+#profile{
+ display:block;
+ grid-column:1 / -1 !important;
+ width:100% !important;
+ max-width:none !important;
+ min-width:0 !important;
+ float:none !important;
+ clear:both !important;
+}
+#profile > *{
+ width:100% !important;
+ max-width:100% !important;
+ min-width:0 !important;
+ float:none !important;
+}
+#profile > .profile-photo,
+#profile > .initial{
+ width:90px !important;
+ height:90px !important;
+}
+#profile .row{
+ width:100% !important;
+ display:flex !important;
+ flex-direction:row !important;
+ justify-content:space-between !important;
+ align-items:flex-start !important;
+ flex-wrap:wrap !important;
+}
+#profile .profile-votes > div{
+ width:100% !important;
+}
+#profile .profile-votes > div > div:first-child{
+ width:100% !important;
+ display:flex !important;
+ flex-direction:row !important;
+ justify-content:space-between !important;
+ align-items:flex-start !important;
+ gap:12px !important;
+}
+#profile .profile-votes > div > div:first-child > div:first-child{
+ flex:1 1 auto !important;
+ width:auto !important;
+ min-width:0 !important;
+}
+#profile .profile-votes > div > div:first-child > div:last-child{
+ flex:0 0 auto !important;
+ width:auto !important;
+}
 </style>
 </head>
 <body>
