@@ -11,19 +11,31 @@ body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:#172
 header{background:linear-gradient(135deg,#102d46,#1769aa);color:#fff;padding:18px 18px 34px}
 .wrap{max-width:980px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center}.logo{font-weight:800;font-size:22px}.badge{font-size:12px;border:1px solid #ffffff55;padding:7px 10px;border-radius:99px}
 .hero{padding:45px 0 10px}.hero h1{font-size:42px;line-height:1.05;margin:0 0 12px}.hero p{font-size:18px;opacity:.9;max-width:650px}
-main{padding:24px 18px 60px}.bar{background:#fff;border:1px solid var(--border);padding:16px;border-radius:14px;margin-top:-42px;position:relative;box-shadow:0 8px 25px #00000010}
+html,body{overflow-x:hidden}main{padding:24px 18px 60px;min-width:0}.bar{background:#fff;border:1px solid var(--border);padding:16px;border-radius:14px;margin-top:-42px;position:relative;box-shadow:0 8px 25px #00000010}
 label{font-size:13px;color:var(--muted);display:block;margin-bottom:7px}select,input{width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:#fff}
 .section{margin-top:27px}.section h2{margin:0 0 13px;font-size:22px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:17px}
 .td{cursor:pointer;transition:.15s}.td:hover{transform:translateY(-2px);box-shadow:0 5px 16px #0000000d}
 .initial{width:46px;height:46px;border-radius:50%;background:#e8f0f7;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);margin-bottom:12px}.td-photo{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin-bottom:12px;background:#e8f0f7}.profile-photo{width:110px;height:110px;border-radius:50%;object-fit:cover;display:block;margin:0 0 14px;background:#e8f0f7}
 h3{margin:0 0 5px}.muted{color:var(--muted);font-size:14px}.pill{display:inline-block;margin-top:11px;padding:5px 9px;border-radius:99px;background:#eef2f6;font-size:12px}
-.search{margin-bottom:12px}.vote{padding:15px 0;border-bottom:1px solid var(--border)}.vote:last-child{border:0}.vhead{display:flex;justify-content:space-between;gap:12px}.date{font-size:13px;color:var(--muted)}.result{font-size:13px;color:var(--muted);margin-top:4px}.votes{margin-top:10px;display:none}.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:14px;border-top:1px solid #eef0f2}.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}.absent{color:var(--muted);font-weight:700}
-button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;font-size:13px}
+.search{margin-bottom:12px}.vote{padding:15px 0;border-bottom:1px solid var(--border);min-width:0}.vote>*{min-width:0}.vote:last-child{border:0}.vhead{display:flex;justify-content:space-between;gap:12px}.date{font-size:13px;color:var(--muted)}.result{font-size:13px;color:var(--muted);margin-top:4px}.votes{margin-top:10px;display:none}.row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px 12px;padding:7px 0;font-size:14px;border-top:1px solid #eef0f2}.row>span:first-child,.row>a:first-child{min-width:0;overflow-wrap:anywhere;word-break:break-word}.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}.absent{color:var(--muted);font-weight:700}
+button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;font-size:13px;display:inline-block;max-width:100%;white-space:normal;text-align:center;line-height:1.25}
 .close{background:#667085;margin-top:15px}.profile-votes{margin-top:18px}.profile-note{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
 .source{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
 footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-size:12px;line-height:1.5}
 @media(max-width:720px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:34px}.vhead{display:block}.vhead button{margin-top:9px}}
-@media(max-width:480px){.grid{grid-template-columns:1fr}}
+@media(max-width:480px){
+ .grid{grid-template-columns:1fr}
+ .card{padding:14px}
+ .profile-photo{width:84px;height:84px}
+ .profile-votes>div{padding:14px 0!important}
+ .profile-votes .row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
+ .profile-votes .row>span:first-child{font-size:15px;line-height:1.35}
+ .profile-votes .link{margin-top:9px!important}
+ .vhead{display:block}
+ .vhead>div{min-width:0}
+ .vhead button{margin-top:10px;width:auto}
+ .source{overflow-wrap:anywhere}
+}
 </style>
 </head>
 <body>
@@ -335,12 +347,14 @@ function showProfile(index){
        if(mv==="Níl")cls="no";
        if(mv==="Absent"||mv==="Abstained")cls="absent";
        return `
-         <div style="padding:10px 0;border-top:1px solid #eef0f2">
-           <div class="row" style="border-top:0;padding:0">
-             <span>${v.title}</span>
-             <span class="${cls}">${mv}</span>
+         <div style="padding:14px 0;border-top:1px solid #eef0f2;min-width:0">
+           <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;min-width:0">
+             <div style="min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35">${v.title}</div>
+             <div class="${cls}" style="white-space:nowrap">${mv}</div>
            </div>
-           <a class="link" style="display:inline-block;margin-top:7px" href="${officialDebateUrl(v.date)}" target="_blank">Open official debate</a>
+           <div style="margin-top:9px">
+             <a class="link" href="${officialDebateUrl(v.date)}" target="_blank" rel="noopener">Open official debate</a>
+           </div>
          </div>
        `;
      }).join("") : "<div class='muted'>No recent votes available.</div>"}
@@ -388,7 +402,7 @@ function renderVotes(){
          if(mv==="Tá")cls="yes";
          if(mv==="Níl")cls="no";
          if(mv==="Absent"||mv==="Abstained")cls="absent";
-         return `<div class="row"><span>${t.name}</span><span class="${cls}">${mv}</span></div>`;
+         return `<div class="row"><span>${t.name}</span><span class="${cls}" style="white-space:nowrap">${mv}</span></div>`;
        }).join("")}
        <div class="source">
          <strong>Official source:</strong>
