@@ -78,11 +78,6 @@
       color: #666;
     }
 
-    .status {
-      color: #555;
-      margin-bottom: 15px;
-    }
-
     .error {
       color: #b00020;
       font-weight: bold;
@@ -138,10 +133,6 @@
       font-size: 14px;
     }
 
-    .official:hover {
-      opacity: 0.9;
-    }
-
     .source {
       font-size: 13px;
       color: #666;
@@ -175,10 +166,6 @@
 </header>
 
 
-<!-- ==============================
-     CONSTITUENCY
-============================== -->
-
 <div class="box">
 
   <h2>Your constituency</h2>
@@ -189,10 +176,6 @@
 
 </div>
 
-
-<!-- ==============================
-     TDs
-============================== -->
 
 <div class="box">
 
@@ -207,10 +190,6 @@
 </div>
 
 
-<!-- ==============================
-     VOTES
-============================== -->
-
 <div class="box">
 
   <h2>Recent Dáil votes</h2>
@@ -223,9 +202,7 @@
 
   <div class="source">
     Voting data supplied from the
-    <a
-      href="https://www.oireachtas.ie/en/open-data/"
-      target="_blank">
+    <a href="https://www.oireachtas.ie/en/open-data/" target="_blank">
       Houses of the Oireachtas
     </a>.
   </div>
@@ -240,7 +217,7 @@ let allVotes = [];
 
 
 /* ==============================
-   GET CONSTITUENCIES FOR A TD
+   MEMBER CONSTITUENCIES
 ============================== */
 
 function getMemberConstituencies(member) {
@@ -252,7 +229,6 @@ function getMemberConstituencies(member) {
       ? member.memberships
       : [];
 
-
   memberships.forEach(wrapper => {
 
     const membership =
@@ -260,37 +236,26 @@ function getMemberConstituencies(member) {
         ? wrapper.membership
         : wrapper;
 
-
-    if (!membership) {
-      return;
-    }
-
+    if (!membership) return;
 
     let represents =
       membership.represents || [];
-
 
     if (!Array.isArray(represents)) {
       represents = [represents];
     }
 
-
     represents.forEach(rep => {
 
-      if (!rep) {
-        return;
-      }
-
+      if (!rep) return;
 
       const constituency =
         rep.represent || {};
-
 
       const name =
         constituency.showAs ||
         constituency.name ||
         "";
-
 
       if (
         name &&
@@ -303,13 +268,12 @@ function getMemberConstituencies(member) {
 
   });
 
-
   return found;
 }
 
 
 /* ==============================
-   LOAD TDs
+   LOAD MEMBERS
 ============================== */
 
 async function loadTDs() {
@@ -320,43 +284,32 @@ async function loadTDs() {
   const select =
     document.getElementById("constituency");
 
-
   try {
 
     const response =
       await fetch("/api/members");
 
-
     if (!response.ok) {
-
       throw new Error(
         "TD API returned HTTP " +
         response.status
       );
-
     }
-
 
     const data =
       await response.json();
-
 
     allMembers =
       Array.isArray(data.results)
         ? data.results
         : [];
 
-
     if (!allMembers.length) {
-
       throw new Error(
         "No TD records were returned"
       );
-
     }
 
-
-    /* FIND CONSTITUENCIES */
 
     const constituencySet =
       new Set();
@@ -367,34 +320,23 @@ async function loadTDs() {
       const member =
         result.member || {};
 
-
-      const names =
-        getMemberConstituencies(member);
-
-
-      names.forEach(name => {
-
-        constituencySet.add(name);
-
-      });
+      getMemberConstituencies(member)
+        .forEach(name => {
+          constituencySet.add(name);
+        });
 
     });
 
 
-    /* BUILD DROPDOWN */
-
     select.innerHTML = "";
-
 
     const first =
       document.createElement("option");
-
 
     first.value = "";
 
     first.textContent =
       "Select your constituency";
-
 
     select.appendChild(first);
 
@@ -406,11 +348,9 @@ async function loadTDs() {
         const option =
           document.createElement("option");
 
-
         option.value = name;
 
         option.textContent = name;
-
 
         select.appendChild(option);
 
@@ -425,19 +365,17 @@ async function loadTDs() {
     displayTDs();
 
 
-    select.onchange =
-      function() {
+    select.onchange = function() {
 
-        displayTDs();
-        displayVotes();
+      displayTDs();
+      displayVotes();
 
-      };
+    };
 
 
   } catch (error) {
 
     console.error(error);
-
 
     status.innerHTML =
       '<div class="error">' +
@@ -459,14 +397,11 @@ function displayTDs() {
   const list =
     document.getElementById("tds");
 
-
   const select =
     document.getElementById("constituency");
 
-
   const selected =
     select.value;
-
 
   let filtered =
     allMembers;
@@ -480,14 +415,9 @@ function displayTDs() {
         const member =
           result.member || {};
 
-
-        const constituencies =
-          getMemberConstituencies(member);
-
-
-        return constituencies.includes(
-          selected
-        );
+        return getMemberConstituencies(
+          member
+        ).includes(selected);
 
       });
 
@@ -509,7 +439,6 @@ function displayTDs() {
 
       const member =
         result.member || {};
-
 
       const name =
         member.fullName ||
@@ -550,12 +479,10 @@ async function loadVotes() {
   const status =
     document.getElementById("voteStatus");
 
-
   try {
 
     const response =
       await fetch("/api/votes");
-
 
     if (!response.ok) {
 
@@ -566,16 +493,13 @@ async function loadVotes() {
 
     }
 
-
     const data =
       await response.json();
-
 
     allVotes =
       Array.isArray(data.results)
         ? data.results
         : [];
-
 
     if (!allVotes.length) {
 
@@ -585,11 +509,9 @@ async function loadVotes() {
 
     }
 
-
     status.textContent =
       allVotes.length +
       " recent Dáil votes loaded.";
-
 
     displayVotes();
 
@@ -597,7 +519,6 @@ async function loadVotes() {
   } catch (error) {
 
     console.error(error);
-
 
     status.innerHTML =
       '<div class="error">' +
@@ -611,71 +532,341 @@ async function loadVotes() {
 
 
 /* ==============================
-   GET VOTE FROM A TD
+   GET MEMBER CODE
 ============================== */
 
-function getTDVote(division, member) {
+function getMemberCode(member) {
 
-  const memberCode =
-    member.memberCode;
+  return (
+    member.memberCode ||
+    member.code ||
+    member.member_id ||
+    ""
+  );
 
-
-  const tallies =
-    Array.isArray(division.tallies)
-      ? division.tallies
-      : [];
-
-
-  for (const tallyWrapper of tallies) {
-
-    const tally =
-      tallyWrapper &&
-      tallyWrapper.tally
-        ? tallyWrapper.tally
-        : tallyWrapper;
+}
 
 
-    if (!tally) {
-      continue;
-    }
+/* ==============================
+   SEARCH ALL TALLY LEVELS
+============================== */
+
+function findVoteInObject(
+  object,
+  memberCode
+) {
+
+  if (!object) {
+    return null;
+  }
 
 
-    const members =
-      Array.isArray(tally.members)
-        ? tally.members
-        : [];
+  if (Array.isArray(object)) {
 
+    for (const item of object) {
 
-    const found =
-      members.find(voteMember => {
-
-        const m =
-          voteMember.member ||
-          voteMember;
-
-
-        return (
-          m.memberCode === memberCode
+      const result =
+        findVoteInObject(
+          item,
+          memberCode
         );
 
-      });
+      if (result) {
+        return result;
+      }
+
+    }
+
+    return null;
+  }
 
 
-    if (found) {
+  if (typeof object !== "object") {
+    return null;
+  }
 
-      return (
-        tally.showAs ||
-        tally.name ||
-        "Recorded"
-      );
+
+  /* Check for member directly */
+
+  const possibleMember =
+    object.member ||
+    object;
+
+
+  if (
+    possibleMember &&
+    typeof possibleMember === "object"
+  ) {
+
+    const code =
+      possibleMember.memberCode ||
+      possibleMember.code ||
+      "";
+
+    if (
+      code &&
+      code === memberCode
+    ) {
+
+      return true;
 
     }
 
   }
 
 
-  return "Not recorded";
+  /* Search children */
 
+  for (const key of Object.keys(object)) {
+
+    const value =
+      object[key];
+
+    if (
+      key === "memberCode" ||
+      key === "code"
+    ) {
+      continue;
+    }
+
+    const result =
+      findVoteInObject(
+        value,
+        memberCode
+      );
+
+    if (result) {
+      return result;
+    }
+
+  }
+
+
+  return null;
+}
+
+
+/* ==============================
+   FIND TD VOTE
+============================== */
+
+function getTDVote(
+  division,
+  member
+) {
+
+  const memberCode =
+    getMemberCode(member);
+
+  if (!memberCode) {
+    return "Not recorded";
+  }
+
+
+  const tallies =
+    division.tallies ||
+    {};
+
+
+  /*
+    Search the complete tally object.
+
+    The Oireachtas response nests
+    the individual members inside
+    the tally data.
+  */
+
+  const categories = [
+    "Tá",
+    "Níl",
+    "Abstained",
+    "Abstain",
+    "Did not vote",
+    "Absent"
+  ];
+
+
+  for (const category of categories) {
+
+    const found =
+      findVoteInObject(
+        tallies[category],
+        memberCode
+      );
+
+    if (found) {
+      return category;
+    }
+
+  }
+
+
+  /*
+    If the response uses another
+    tally structure, search everything.
+  */
+
+  const found =
+    findVoteInObject(
+      tallies,
+      memberCode
+    );
+
+  if (found) {
+
+    /*
+      Find the vote label by looking
+      through the tally structure.
+    */
+
+    const label =
+      findVoteLabel(
+        tallies,
+        memberCode
+      );
+
+    return label || "Recorded";
+
+  }
+
+
+  return "Not recorded";
+}
+
+
+/* ==============================
+   FIND VOTE LABEL
+============================== */
+
+function findVoteLabel(
+  object,
+  memberCode
+) {
+
+  if (!object) {
+    return null;
+  }
+
+
+  if (Array.isArray(object)) {
+
+    for (const item of object) {
+
+      const result =
+        findVoteLabel(
+          item,
+          memberCode
+        );
+
+      if (result) {
+        return result;
+      }
+
+    }
+
+    return null;
+  }
+
+
+  if (
+    typeof object !== "object"
+  ) {
+    return null;
+  }
+
+
+  const member =
+    object.member ||
+    object;
+
+
+  if (
+    member &&
+    typeof member === "object"
+  ) {
+
+    const code =
+      member.memberCode ||
+      member.code ||
+      "";
+
+    if (
+      code === memberCode
+    ) {
+
+      return null;
+
+    }
+
+  }
+
+
+  for (const key of Object.keys(object)) {
+
+    const value =
+      object[key];
+
+
+    if (
+      key === "showAs" ||
+      key === "name"
+    ) {
+      continue;
+    }
+
+
+    const result =
+      findVoteLabel(
+        value,
+        memberCode
+      );
+
+    if (result) {
+      return result;
+    }
+
+  }
+
+
+  return null;
+}
+
+
+/* ==============================
+   SUBJECT TEXT
+============================== */
+
+function getSubject(division) {
+
+  let subject =
+    division.subject ||
+    division.voteNote ||
+    "";
+
+
+  if (typeof subject === "string") {
+    return subject;
+  }
+
+
+  if (
+    subject &&
+    typeof subject === "object"
+  ) {
+
+    return (
+      subject.showAs ||
+      subject.text ||
+      subject.name ||
+      subject.title ||
+      subject.value ||
+      ""
+    );
+
+  }
+
+
+  return "Dáil division";
 }
 
 
@@ -688,10 +879,8 @@ function displayVotes() {
   const container =
     document.getElementById("votes");
 
-
   const select =
     document.getElementById("constituency");
-
 
   const selected =
     select.value;
@@ -710,14 +899,11 @@ function displayVotes() {
   }
 
 
-  /* GET TDs FOR SELECTED CONSTITUENCY */
-
   const selectedMembers =
     allMembers.filter(result => {
 
       const member =
         result.member || {};
-
 
       return getMemberConstituencies(
         member
@@ -735,8 +921,6 @@ function displayVotes() {
 
   }
 
-
-  /* SHOW RECENT VOTES */
 
   const recentVotes =
     allVotes.slice(0, 20);
@@ -756,9 +940,7 @@ function displayVotes() {
 
 
       const subject =
-        division.subject ||
-        division.voteNote ||
-        "Dáil division";
+        getSubject(division);
 
 
       const officialUrl =
@@ -768,46 +950,48 @@ function displayVotes() {
 
 
       const tdResults =
-        selectedMembers.map(memberResult => {
+        selectedMembers.map(
+          memberResult => {
 
-          const member =
-            memberResult.member ||
-            {};
-
-
-          const name =
-            member.fullName ||
-            (
-              (member.firstName || "") +
-              " " +
-              (member.lastName || "")
-            ).trim();
+            const member =
+              memberResult.member ||
+              {};
 
 
-          const vote =
-            getTDVote(
-              division,
-              member
-            );
+            const name =
+              member.fullName ||
+              (
+                (member.firstName || "") +
+                " " +
+                (member.lastName || "")
+              ).trim();
 
 
-          return `
-            <div class="td-vote">
+            const vote =
+              getTDVote(
+                division,
+                member
+              );
 
-              <div class="td-vote-name">
-                ${escapeHtml(
-                  name || "Unknown TD"
-                )}
+
+            return `
+              <div class="td-vote">
+
+                <div class="td-vote-name">
+                  ${escapeHtml(
+                    name || "Unknown TD"
+                  )}
+                </div>
+
+                <div class="vote-result">
+                  ${escapeHtml(vote)}
+                </div>
+
               </div>
+            `;
 
-              <div class="vote-result">
-                ${escapeHtml(vote)}
-              </div>
-
-            </div>
-          `;
-
-        }).join("");
+          }
+        ).join("");
 
 
       return `
@@ -830,7 +1014,9 @@ function displayVotes() {
               ? `
                 <a
                   class="official"
-                  href="${escapeHtml(officialUrl)}"
+                  href="${escapeHtml(
+                    officialUrl
+                  )}"
                   target="_blank">
                   View official Oireachtas record
                 </a>
@@ -847,7 +1033,7 @@ function displayVotes() {
 
 
 /* ==============================
-   FORMAT DATE
+   DATE
 ============================== */
 
 function formatDate(date) {
@@ -856,21 +1042,17 @@ function formatDate(date) {
     return "";
   }
 
-
   try {
 
-    const d =
-      new Date(date);
-
-
-    return d.toLocaleDateString(
-      "en-IE",
-      {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      }
-    );
+    return new Date(date)
+      .toLocaleDateString(
+        "en-IE",
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
 
   } catch {
 
