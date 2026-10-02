@@ -36,6 +36,42 @@ footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-s
  .profile-vote-title{max-width:calc(100% - 58px)}
  .profile-actions .link,.profile-actions .close{margin-top:0}
 }
+
+/* Structural layout reset */
+.section{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important}
+#tds{display:grid!important;width:100%!important;max-width:100%!important;min-width:0!important}
+#profile{
+ display:block!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ clear:both!important;
+ grid-column:1 / -1!important;
+ box-sizing:border-box!important;
+ overflow:hidden!important;
+}
+#profile[style*="display:none"]{display:none!important}
+#profile .profile-vote-row{
+ display:flex!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ box-sizing:border-box!important;
+}
+#profile .profile-vote-title{
+ flex:1 1 auto!important;
+ min-width:0!important;
+ overflow-wrap:anywhere!important;
+ word-break:normal!important;
+}
+#profile .profile-vote-choice{
+ flex:0 0 auto!important;
+ white-space:nowrap!important;
+}
+@media(max-width:720px){
+ #tds{grid-template-columns:1fr!important}
+ #profile{margin-left:0!important;margin-right:0!important;padding:16px!important}
+}
 </style>
 </head>
 <body>
@@ -57,7 +93,7 @@ footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-s
 <div class="section">
 <h2>Your TDs</h2>
 <div id="tds" class="grid"></div>
-<div id="profile" style="display:none;margin-top:20px;background:#fff;border:1px solid #dfe4ea;border-radius:14px;padding:20px"></div>
+<div id="profile" class="profile-container" style="display:none;margin-top:20px;background:#fff;border:1px solid #dfe4ea;border-radius:14px;padding:20px"></div>
 </div>
 
 <div class="section">
@@ -289,6 +325,7 @@ function memberPhotoMarkup(t,profile=false){
 
 /* TD CARDS + PROFILE */
 function renderTDs(){
+ ensureProfilePlacement();
  const list=getDisplayedTDs();
  document.getElementById("tds").innerHTML=
  list.map((t,i)=>`
@@ -302,7 +339,22 @@ function renderTDs(){
  "<div class='muted'>No TDs found for this constituency.</div>";
 }
 
+
+function ensureProfilePlacement(){
+ const profile=document.getElementById("profile");
+ const tds=document.getElementById("tds");
+ if(!profile || !tds)return;
+ const section=tds.parentElement;
+ if(section && profile.parentElement!==section){
+   section.appendChild(profile);
+ }
+ if(profile.parentElement===tds){
+   section.appendChild(profile);
+ }
+}
+
 function showProfile(index){
+ ensureProfilePlacement();
  const list=getDisplayedTDs();
  const t=list[index];
  if(!t)return;
