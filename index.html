@@ -1,211 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>TD Tracker</title>
+<title>TD Tracker</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      color: #222;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  color: #222;
+}
 
-    header {
-      background: #075985;
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-    }
+header {
+  background: #075985;
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 34px;
-    }
+header h1 {
+  margin: 0;
+  font-size: 34px;
+}
 
-    header p {
-      margin: 8px 0 0;
-      font-size: 17px;
-    }
+header p {
+  margin: 8px 0 0;
+  font-size: 17px;
+}
 
-    .box {
-      background: white;
-      margin: 20px auto;
-      padding: 22px;
-      border-radius: 14px;
-      max-width: 850px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+.box {
+  background: white;
+  margin: 20px auto;
+  padding: 22px;
+  border-radius: 14px;
+  max-width: 850px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-    h2 {
-      margin-top: 0;
-      color: #075985;
-    }
+h2 {
+  margin-top: 0;
+  color: #075985;
+}
 
-    select {
-      width: 100%;
-      padding: 14px;
-      font-size: 17px;
-      border: 1px solid #bbb;
-      border-radius: 8px;
-      background: white;
-      margin-bottom: 10px;
-    }
+select {
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  background: white;
+}
 
-    .td {
-      padding: 17px 0;
-      border-bottom: 1px solid #ddd;
-    }
+.td {
+  padding: 17px 0;
+  border-bottom: 1px solid #ddd;
+}
 
-    .td:last-child {
-      border-bottom: none;
-    }
+.name {
+  font-size: 20px;
+  font-weight: bold;
+}
 
-    .name {
-      font-size: 20px;
-      font-weight: bold;
-    }
+.info {
+  margin-top: 5px;
+  color: #666;
+}
 
-    .info {
-      margin-top: 5px;
-      color: #666;
-    }
+.error {
+  color: #b00020;
+  font-weight: bold;
+}
 
-    .error {
-      color: #b00020;
-      font-weight: bold;
-    }
+.vote {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 18px;
+  margin: 15px 0;
+  background: #fafafa;
+}
 
-    .vote {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      padding: 18px;
-      margin: 15px 0;
-      background: #fafafa;
-    }
+.vote-date {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 7px;
+}
 
-    .vote-date {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 7px;
-    }
+.vote-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  line-height: 1.35;
+}
 
-    .vote-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 15px;
-      line-height: 1.35;
-    }
+.td-vote {
+  padding: 12px;
+  margin: 8px 0;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
 
-    .td-vote {
-      padding: 12px;
-      margin: 8px 0;
-      background: white;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-    }
+.td-vote-name {
+  font-weight: bold;
+  font-size: 16px;
+}
 
-    .td-vote-name {
-      font-weight: bold;
-      font-size: 16px;
-    }
+.vote-result {
+  margin-top: 5px;
+  font-weight: bold;
+}
 
-    .vote-result {
-      margin-top: 5px;
-      font-weight: bold;
-    }
+.official {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 9px 12px;
+  background: #075985;
+  color: white;
+  text-decoration: none;
+  border-radius: 7px;
+  font-size: 14px;
+}
 
-    .official {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 9px 12px;
-      background: #075985;
-      color: white;
-      text-decoration: none;
-      border-radius: 7px;
-      font-size: 14px;
-    }
+.source {
+  font-size: 13px;
+  color: #666;
+  margin-top: 20px;
+}
 
-    .source {
-      font-size: 13px;
-      color: #666;
-      margin-top: 20px;
-    }
+.loading {
+  color: #666;
+  padding: 10px 0;
+}
 
-    a {
-      color: #075985;
-    }
-
-    .loading {
-      color: #666;
-      padding: 10px 0;
-    }
-
-    .notice {
-      background: #eef6fb;
-      border-left: 4px solid #075985;
-      padding: 12px;
-      margin-bottom: 15px;
-      color: #444;
-    }
-  </style>
+.notice {
+  background: #eef6fb;
+  border-left: 4px solid #075985;
+  padding: 12px;
+  margin-bottom: 15px;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>TD Tracker</h1>
-  <p>How did your TD vote?</p>
+<h1>TD Tracker</h1>
+<p>How did your TD vote?</p>
 </header>
 
-
 <div class="box">
 
-  <h2>Your constituency</h2>
+<h2>Your constituency</h2>
 
-  <select id="constituency">
-    <option value="">Select your constituency</option>
-  </select>
+<select id="constituency">
+<option value="">Select your constituency</option>
+</select>
 
 </div>
 
 
 <div class="box">
 
-  <h2>Your TDs</h2>
+<h2>Your TDs</h2>
 
-  <div id="status">
-    Loading TD data...
-  </div>
+<div id="status">
+Loading TD data...
+</div>
 
-  <div id="tds"></div>
+<div id="tds"></div>
 
 </div>
 
 
 <div class="box">
 
-  <h2>Recent Dáil votes</h2>
+<h2>Recent Dáil votes</h2>
 
-  <div id="voteStatus" class="loading">
-    Loading recent votes...
-  </div>
+<div id="voteStatus" class="loading">
+Loading recent votes...
+</div>
 
-  <div id="votes"></div>
+<div id="votes"></div>
 
-  <div class="source">
-    Voting data supplied from the
-    <a href="https://www.oireachtas.ie/en/open-data/" target="_blank">
-      Houses of the Oireachtas
-    </a>.
-  </div>
+<div class="source">
+Voting data supplied from the
+<a
+href="https://www.oireachtas.ie/en/open-data/"
+target="_blank">
+Houses of the Oireachtas
+</a>.
+</div>
 
 </div>
 
@@ -217,7 +208,7 @@ let allVotes = [];
 
 
 /* ==============================
-   MEMBER CONSTITUENCIES
+   GET CONSTITUENCIES
 ============================== */
 
 function getMemberConstituencies(member) {
@@ -236,7 +227,9 @@ function getMemberConstituencies(member) {
         ? wrapper.membership
         : wrapper;
 
-    if (!membership) return;
+    if (!membership) {
+      return;
+    }
 
     let represents =
       membership.represents || [];
@@ -247,7 +240,9 @@ function getMemberConstituencies(member) {
 
     represents.forEach(rep => {
 
-      if (!rep) return;
+      if (!rep) {
+        return;
+      }
 
       const constituency =
         rep.represent || {};
@@ -273,7 +268,7 @@ function getMemberConstituencies(member) {
 
 
 /* ==============================
-   LOAD MEMBERS
+   LOAD TDs
 ============================== */
 
 async function loadTDs() {
@@ -330,6 +325,7 @@ async function loadTDs() {
 
     select.innerHTML = "";
 
+
     const first =
       document.createElement("option");
 
@@ -368,6 +364,7 @@ async function loadTDs() {
     select.onchange = function() {
 
       displayTDs();
+
       displayVotes();
 
     };
@@ -515,7 +512,6 @@ async function loadVotes() {
 
     displayVotes();
 
-
   } catch (error) {
 
     console.error(error);
@@ -532,7 +528,7 @@ async function loadVotes() {
 
 
 /* ==============================
-   GET MEMBER CODE
+   MEMBER CODE
 ============================== */
 
 function getMemberCode(member) {
@@ -548,112 +544,10 @@ function getMemberCode(member) {
 
 
 /* ==============================
-   SEARCH ALL TALLY LEVELS
+   GET TD VOTE
 ============================== */
 
-function findVoteInObject(
-  object,
-  memberCode
-) {
-
-  if (!object) {
-    return null;
-  }
-
-
-  if (Array.isArray(object)) {
-
-    for (const item of object) {
-
-      const result =
-        findVoteInObject(
-          item,
-          memberCode
-        );
-
-      if (result) {
-        return result;
-      }
-
-    }
-
-    return null;
-  }
-
-
-  if (typeof object !== "object") {
-    return null;
-  }
-
-
-  /* Check for member directly */
-
-  const possibleMember =
-    object.member ||
-    object;
-
-
-  if (
-    possibleMember &&
-    typeof possibleMember === "object"
-  ) {
-
-    const code =
-      possibleMember.memberCode ||
-      possibleMember.code ||
-      "";
-
-    if (
-      code &&
-      code === memberCode
-    ) {
-
-      return true;
-
-    }
-
-  }
-
-
-  /* Search children */
-
-  for (const key of Object.keys(object)) {
-
-    const value =
-      object[key];
-
-    if (
-      key === "memberCode" ||
-      key === "code"
-    ) {
-      continue;
-    }
-
-    const result =
-      findVoteInObject(
-        value,
-        memberCode
-      );
-
-    if (result) {
-      return result;
-    }
-
-  }
-
-
-  return null;
-}
-
-
-/* ==============================
-   FIND TD VOTE
-============================== */
-
-function getTDVote(
-  division,
-  member
-) {
+function getTDVote(division, member) {
 
   const memberCode =
     getMemberCode(member);
@@ -664,68 +558,95 @@ function getTDVote(
 
 
   const tallies =
-    division.tallies ||
-    {};
+    division.tallies || {};
 
 
-  /*
-    Search the complete tally object.
-
-    The Oireachtas response nests
-    the individual members inside
-    the tally data.
-  */
-
-  const categories = [
-    "Tá",
-    "Níl",
-    "Abstained",
-    "Abstain",
-    "Did not vote",
-    "Absent"
-  ];
+  let tallyList =
+    tallies.tallies ||
+    tallies;
 
 
-  for (const category of categories) {
+  if (!Array.isArray(tallyList)) {
 
-    const found =
-      findVoteInObject(
-        tallies[category],
-        memberCode
-      );
+    if (
+      tallyList &&
+      typeof tallyList === "object"
+    ) {
 
-    if (found) {
-      return category;
+      tallyList =
+        Object.values(tallyList);
+
+    } else {
+
+      tallyList = [];
+
     }
 
   }
 
 
-  /*
-    If the response uses another
-    tally structure, search everything.
-  */
+  for (const item of tallyList) {
 
-  const found =
-    findVoteInObject(
-      tallies,
-      memberCode
-    );
+    const tally =
+      item && item.tally
+        ? item.tally
+        : item;
 
-  if (found) {
 
-    /*
-      Find the vote label by looking
-      through the tally structure.
-    */
+    if (!tally) {
+      continue;
+    }
 
-    const label =
-      findVoteLabel(
-        tallies,
-        memberCode
-      );
 
-    return label || "Recorded";
+    const voteName =
+      tally.showAs ||
+      tally.name ||
+      tally.label ||
+      "";
+
+
+    let members =
+      tally.members ||
+      [];
+
+
+    if (!Array.isArray(members)) {
+
+      members =
+        Object.values(members);
+
+    }
+
+
+    for (const voteMember of members) {
+
+      const m =
+        voteMember.member ||
+        voteMember;
+
+
+      if (!m) {
+        continue;
+      }
+
+
+      const code =
+        m.memberCode ||
+        m.code ||
+        "";
+
+
+      if (
+        code &&
+        code === memberCode
+      ) {
+
+        return voteName ||
+          "Recorded";
+
+      }
+
+    }
 
   }
 
@@ -735,105 +656,7 @@ function getTDVote(
 
 
 /* ==============================
-   FIND VOTE LABEL
-============================== */
-
-function findVoteLabel(
-  object,
-  memberCode
-) {
-
-  if (!object) {
-    return null;
-  }
-
-
-  if (Array.isArray(object)) {
-
-    for (const item of object) {
-
-      const result =
-        findVoteLabel(
-          item,
-          memberCode
-        );
-
-      if (result) {
-        return result;
-      }
-
-    }
-
-    return null;
-  }
-
-
-  if (
-    typeof object !== "object"
-  ) {
-    return null;
-  }
-
-
-  const member =
-    object.member ||
-    object;
-
-
-  if (
-    member &&
-    typeof member === "object"
-  ) {
-
-    const code =
-      member.memberCode ||
-      member.code ||
-      "";
-
-    if (
-      code === memberCode
-    ) {
-
-      return null;
-
-    }
-
-  }
-
-
-  for (const key of Object.keys(object)) {
-
-    const value =
-      object[key];
-
-
-    if (
-      key === "showAs" ||
-      key === "name"
-    ) {
-      continue;
-    }
-
-
-    const result =
-      findVoteLabel(
-        value,
-        memberCode
-      );
-
-    if (result) {
-      return result;
-    }
-
-  }
-
-
-  return null;
-}
-
-
-/* ==============================
-   SUBJECT TEXT
+   GET SUBJECT
 ============================== */
 
 function getSubject(division) {
@@ -860,7 +683,7 @@ function getSubject(division) {
       subject.name ||
       subject.title ||
       subject.value ||
-      ""
+      "Dáil division"
     );
 
   }
@@ -923,171 +746,4 @@ function displayVotes() {
 
 
   const recentVotes =
-    allVotes.slice(0, 20);
-
-
-  container.innerHTML =
-    recentVotes.map(result => {
-
-      const division =
-        result.division ||
-        result;
-
-
-      const date =
-        division.date ||
-        "";
-
-
-      const subject =
-        getSubject(division);
-
-
-      const officialUrl =
-        division.uri ||
-        division.url ||
-        "";
-
-
-      const tdResults =
-        selectedMembers.map(
-          memberResult => {
-
-            const member =
-              memberResult.member ||
-              {};
-
-
-            const name =
-              member.fullName ||
-              (
-                (member.firstName || "") +
-                " " +
-                (member.lastName || "")
-              ).trim();
-
-
-            const vote =
-              getTDVote(
-                division,
-                member
-              );
-
-
-            return `
-              <div class="td-vote">
-
-                <div class="td-vote-name">
-                  ${escapeHtml(
-                    name || "Unknown TD"
-                  )}
-                </div>
-
-                <div class="vote-result">
-                  ${escapeHtml(vote)}
-                </div>
-
-              </div>
-            `;
-
-          }
-        ).join("");
-
-
-      return `
-        <div class="vote">
-
-          <div class="vote-date">
-            ${escapeHtml(
-              formatDate(date)
-            )}
-          </div>
-
-          <div class="vote-title">
-            ${escapeHtml(subject)}
-          </div>
-
-          ${tdResults}
-
-          ${
-            officialUrl
-              ? `
-                <a
-                  class="official"
-                  href="${escapeHtml(
-                    officialUrl
-                  )}"
-                  target="_blank">
-                  View official Oireachtas record
-                </a>
-              `
-              : ""
-          }
-
-        </div>
-      `;
-
-    }).join("");
-
-}
-
-
-/* ==============================
-   DATE
-============================== */
-
-function formatDate(date) {
-
-  if (!date) {
-    return "";
-  }
-
-  try {
-
-    return new Date(date)
-      .toLocaleDateString(
-        "en-IE",
-        {
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-        }
-      );
-
-  } catch {
-
-    return date;
-
-  }
-
-}
-
-
-/* ==============================
-   HTML SAFETY
-============================== */
-
-function escapeHtml(text) {
-
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-/* ==============================
-   START
-============================== */
-
-loadTDs();
-
-loadVotes();
-
-</script>
-
-</body>
-</html>
+    allVotes.slice(0, 20
