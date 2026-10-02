@@ -534,4 +534,378 @@ function displayTDs() {
           </div>
 
         </div>
-      `
+      `;
+
+    }).join("");
+
+}
+
+
+/* ==============================
+   LOAD VOTES
+============================== */
+
+async function loadVotes() {
+
+  const status =
+    document.getElementById("voteStatus");
+
+
+  try {
+
+    const response =
+      await fetch("/api/votes");
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Vote API returned HTTP " +
+        response.status
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    allVotes =
+      Array.isArray(data.results)
+        ? data.results
+        : [];
+
+
+    if (!allVotes.length) {
+
+      throw new Error(
+        "No vote records were returned"
+      );
+
+    }
+
+
+    status.textContent =
+      allVotes.length +
+      " recent Dáil votes loaded.";
+
+
+    displayVotes();
+
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    status.innerHTML =
+      '<div class="error">' +
+      'ERROR: ' +
+      escapeHtml(error.message) +
+      '</div>';
+
+  }
+
+}
+
+
+/* ==============================
+   GET VOTE FROM A TD
+============================== */
+
+function getTDVote(division, member) {
+
+  const memberCode =
+    member.memberCode;
+
+
+  const tallies =
+    Array.isArray(division.tallies)
+      ? division.tallies
+      : [];
+
+
+  for (const tallyWrapper of tallies) {
+
+    const tally =
+      tallyWrapper &&
+      tallyWrapper.tally
+        ? tallyWrapper.tally
+        : tallyWrapper;
+
+
+    if (!tally) {
+      continue;
+    }
+
+
+    const members =
+      Array.isArray(tally.members)
+        ? tally.members
+        : [];
+
+
+    const found =
+      members.find(voteMember => {
+
+        const m =
+          voteMember.member ||
+          voteMember;
+
+
+        return (
+          m.memberCode === memberCode
+        );
+
+      });
+
+
+    if (found) {
+
+      return (
+        tally.showAs ||
+        tally.name ||
+        "Recorded"
+      );
+
+    }
+
+  }
+
+
+  return "Not recorded";
+
+}
+
+
+/* ==============================
+   DISPLAY VOTES
+============================== */
+
+function displayVotes() {
+
+  const container =
+    document.getElementById("votes");
+
+
+  const select =
+    document.getElementById("constituency");
+
+
+  const selected =
+    select.value;
+
+
+  if (!selected) {
+
+    container.innerHTML =
+      '<div class="notice">' +
+      'Select your constituency above ' +
+      'to see how your TDs voted.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  /* GET TDs FOR SELECTED CONSTITUENCY */
+
+  const selectedMembers =
+    allMembers.filter(result => {
+
+      const member =
+        result.member || {};
+
+
+      return getMemberConstituencies(
+        member
+      ).includes(selected);
+
+    });
+
+
+  if (!selectedMembers.length) {
+
+    container.innerHTML =
+      "<p>No TDs found.</p>";
+
+    return;
+
+  }
+
+
+  /* SHOW RECENT VOTES */
+
+  const recentVotes =
+    allVotes.slice(0, 20);
+
+
+  container.innerHTML =
+    recentVotes.map(result => {
+
+      const division =
+        result.division ||
+        result;
+
+
+      const date =
+        division.date ||
+        "";
+
+
+      const subject =
+        division.subject ||
+        division.voteNote ||
+        "Dáil division";
+
+
+      const officialUrl =
+        division.uri ||
+        division.url ||
+        "";
+
+
+      const tdResults =
+        selectedMembers.map(memberResult => {
+
+          const member =
+            memberResult.member ||
+            {};
+
+
+          const name =
+            member.fullName ||
+            (
+              (member.firstName || "") +
+              " " +
+              (member.lastName || "")
+            ).trim();
+
+
+          const vote =
+            getTDVote(
+              division,
+              member
+            );
+
+
+          return `
+            <div class="td-vote">
+
+              <div class="td-vote-name">
+                ${escapeHtml(
+                  name || "Unknown TD"
+                )}
+              </div>
+
+              <div class="vote-result">
+                ${escapeHtml(vote)}
+              </div>
+
+            </div>
+          `;
+
+        }).join("");
+
+
+      return `
+        <div class="vote">
+
+          <div class="vote-date">
+            ${escapeHtml(
+              formatDate(date)
+            )}
+          </div>
+
+          <div class="vote-title">
+            ${escapeHtml(subject)}
+          </div>
+
+          ${tdResults}
+
+          ${
+            officialUrl
+              ? `
+                <a
+                  class="official"
+                  href="${escapeHtml(officialUrl)}"
+                  target="_blank">
+                  View official Oireachtas record
+                </a>
+              `
+              : ""
+          }
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+/* ==============================
+   FORMAT DATE
+============================== */
+
+function formatDate(date) {
+
+  if (!date) {
+    return "";
+  }
+
+
+  try {
+
+    const d =
+      new Date(date);
+
+
+    return d.toLocaleDateString(
+      "en-IE",
+      {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }
+    );
+
+  } catch {
+
+    return date;
+
+  }
+
+}
+
+
+/* ==============================
+   HTML SAFETY
+============================== */
+
+function escapeHtml(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==============================
+   START
+============================== */
+
+loadTDs();
+
+loadVotes();
+
+</script>
+
+</body>
+</html>
