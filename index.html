@@ -112,8 +112,6 @@
 </header>
 
 
-<!-- CONSTITUENCY -->
-
 <div class="box">
 
   <h2>Your constituency</h2>
@@ -124,8 +122,6 @@
 
 </div>
 
-
-<!-- TDs -->
 
 <div class="box">
 
@@ -139,8 +135,6 @@
 
 </div>
 
-
-<!-- VOTES -->
 
 <div class="box">
 
@@ -175,6 +169,79 @@ let allMembers = [];
 
 
 /* ==============================
+   GET CONSTITUENCIES FOR A TD
+============================== */
+
+function getMemberConstituencies(member) {
+
+  const found = [];
+
+  const memberships =
+    Array.isArray(member.memberships)
+      ? member.memberships
+      : [];
+
+
+  memberships.forEach(wrapper => {
+
+    const membership =
+      wrapper && wrapper.membership
+        ? wrapper.membership
+        : wrapper;
+
+
+    if (!membership) {
+      return;
+    }
+
+
+    let represents =
+      membership.represents || [];
+
+
+    /* Make sure it is always an array */
+
+    if (!Array.isArray(represents)) {
+      represents = [represents];
+    }
+
+
+    represents.forEach(rep => {
+
+      if (!rep) {
+        return;
+      }
+
+
+      const constituency =
+        rep.represent || {};
+
+
+      const name =
+        constituency.showAs ||
+        constituency.name ||
+        "";
+
+
+      if (
+        name &&
+        !found.includes(name)
+      ) {
+
+        found.push(name);
+
+      }
+
+    });
+
+  });
+
+
+  return found;
+}
+
+
+/* ==============================
    LOAD TDs
 ============================== */
 
@@ -183,13 +250,15 @@ async function loadTDs() {
   const status =
     document.getElementById("status");
 
-  const constituencySelect =
+  const select =
     document.getElementById("constituency");
+
 
   try {
 
     const response =
       await fetch("/api/members");
+
 
     if (!response.ok) {
 
@@ -200,11 +269,15 @@ async function loadTDs() {
 
     }
 
+
     const data =
       await response.json();
 
+
     allMembers =
-      data.results || [];
+      Array.isArray(data.results)
+        ? data.results
+        : [];
 
 
     if (!allMembers.length) {
@@ -217,10 +290,10 @@ async function loadTDs() {
 
 
     /* ==========================
-       FIND CONSTITUENCIES
+       FIND ALL CONSTITUENCIES
     ========================== */
 
-    const constituencies =
+    const constituencySet =
       new Set();
 
 
@@ -229,5 +302,212 @@ async function loadTDs() {
       const member =
         result.member || {};
 
-      const memberships =
-       
+
+      const names =
+        getMemberConstituencies(member);
+
+
+      names.forEach(name => {
+
+        constituencySet.add(name);
+
+      });
+
+    });
+
+
+    /* ==========================
+       BUILD DROPDOWN
+    ========================== */
+
+    select.innerHTML = "";
+
+
+    const first =
+      document.createElement("option");
+
+
+    first.value = "";
+
+    first.textContent =
+      "Select your constituency";
+
+
+    select.appendChild(first);
+
+
+    Array.from(constituencySet)
+      .sort()
+      .forEach(name => {
+
+        const option =
+          document.createElement("option");
+
+
+        option.value = name;
+
+        option.textContent = name;
+
+
+        select.appendChild(option);
+
+      });
+
+
+    /* ==========================
+       SHOW STATUS
+    ========================== */
+
+    status.textContent =
+      allMembers.length +
+      " TD records found.";
+
+
+    /* ==========================
+       INITIAL DISPLAY
+    ========================== */
+
+    displayTDs();
+
+
+    /* ==========================
+       DROPDOWN CHANGE
+    ========================== */
+
+    select.onchange =
+      displayTDs;
+
+
+  } catch (error) {
+
+    console.error(error);
+
+
+    status.innerHTML =
+      '<div class="error">' +
+      'ERROR: ' +
+      escapeHtml(error.message) +
+      '</div>';
+
+  }
+
+}
+
+
+/* ==============================
+   DISPLAY TDs
+============================== */
+
+function displayTDs() {
+
+  const list =
+    document.getElementById("tds");
+
+
+  const select =
+    document.getElementById("constituency");
+
+
+  const selected =
+    select.value;
+
+
+  let filtered =
+    allMembers;
+
+
+  if (selected) {
+
+    filtered =
+      allMembers.filter(result => {
+
+        const member =
+          result.member || {};
+
+
+        const constituencies =
+          getMemberConstituencies(member);
+
+
+        return constituencies.includes(
+          selected
+        );
+
+      });
+
+  }
+
+
+  if (!filtered.length) {
+
+    list.innerHTML =
+      "<p>No TDs found for this constituency.</p>";
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    filtered.map(result => {
+
+      const member =
+        result.member || {};
+
+
+      const name =
+        member.fullName ||
+        (
+          (member.firstName || "") +
+          " " +
+          (member.lastName || "")
+        ).trim();
+
+
+      return `
+        <div class="td">
+
+          <div class="name">
+            ${escapeHtml(
+              name || "Unknown TD"
+            )}
+          </div>
+
+          <div class="info">
+            TD • Dáil Éireann
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+/* ==============================
+   HTML SAFETY
+============================== */
+
+function escapeHtml(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==============================
+   START
+============================== */
+
+loadTDs();
+
+</script>
+
+</body>
+</html>
