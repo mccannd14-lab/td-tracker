@@ -1,149 +1,310 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>TD Tracker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TD Tracker Ireland</title>
 
 <style>
-* {
-  box-sizing: border-box;
+:root{
+ --navy:#102d46;
+ --blue:#1769aa;
+ --bg:#f4f6f8;
+ --card:#fff;
+ --muted:#667085;
+ --border:#dfe4ea;
+ --green:#157347;
+ --red:#b42318
 }
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  color: #222;
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ font-family:Inter,Arial,sans-serif;
+ background:var(--bg);
+ color:#17202a
 }
 
-header {
-  background: #075985;
-  color: white;
-  padding: 30px 20px;
-  text-align: center;
+header{
+ background:linear-gradient(135deg,#102d46,#1769aa);
+ color:#fff;
+ padding:18px 18px 34px
 }
 
-header h1 {
-  margin: 0;
-  font-size: 34px;
+.wrap{
+ max-width:980px;
+ margin:auto
 }
 
-header p {
-  margin: 8px 0 0;
-  font-size: 17px;
+.top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center
 }
 
-.box {
-  background: white;
-  margin: 20px auto;
-  padding: 22px;
-  border-radius: 14px;
-  max-width: 850px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+.logo{
+ font-weight:800;
+ font-size:22px
 }
 
-h2 {
-  margin-top: 0;
-  color: #075985;
+.badge{
+ font-size:12px;
+ border:1px solid #ffffff55;
+ padding:7px 10px;
+ border-radius:99px
 }
 
-select {
-  width: 100%;
-  padding: 14px;
-  font-size: 17px;
-  border: 1px solid #bbb;
-  border-radius: 8px;
-  background: white;
+.hero{
+ padding:45px 0 10px
 }
 
-.td {
-  padding: 17px 0;
-  border-bottom: 1px solid #ddd;
+.hero h1{
+ font-size:42px;
+ line-height:1.05;
+ margin:0 0 12px
 }
 
-.name {
-  font-size: 20px;
-  font-weight: bold;
+.hero p{
+ font-size:18px;
+ opacity:.9;
+ max-width:650px
 }
 
-.info {
-  margin-top: 5px;
-  color: #666;
+main{
+ padding:24px 18px 60px
 }
 
-.error {
-  color: #b00020;
-  font-weight: bold;
+.bar{
+ background:#fff;
+ border:1px solid var(--border);
+ padding:16px;
+ border-radius:14px;
+ margin-top:-42px;
+ position:relative;
+ box-shadow:0 8px 25px #00000010
 }
 
-.vote {
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 18px;
-  margin: 15px 0;
-  background: #fafafa;
+label{
+ font-size:13px;
+ color:var(--muted);
+ display:block;
+ margin-bottom:7px
 }
 
-.vote-date {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 7px;
+select,input{
+ width:100%;
+ padding:13px;
+ border:1px solid var(--border);
+ border-radius:10px;
+ font-size:16px;
+ background:#fff
 }
 
-.vote-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  line-height: 1.35;
+.section{
+ margin-top:27px
 }
 
-.td-vote {
-  padding: 12px;
-  margin: 8px 0;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+.section h2{
+ margin:0 0 13px;
+ font-size:22px
 }
 
-.td-vote-name {
-  font-weight: bold;
-  font-size: 16px;
+.grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:13px
 }
 
-.vote-result {
-  margin-top: 5px;
-  font-weight: bold;
+.card{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:17px
 }
 
-.official {
-  display: inline-block;
-  margin-top: 12px;
-  padding: 9px 12px;
-  background: #075985;
-  color: white;
-  text-decoration: none;
-  border-radius: 7px;
-  font-size: 14px;
+.td{
+ cursor:pointer;
+ transition:.15s
 }
 
-.source {
-  font-size: 13px;
-  color: #666;
-  margin-top: 20px;
+.td:hover{
+ transform:translateY(-2px);
+ box-shadow:0 5px 16px #0000000d
 }
 
-.loading {
-  color: #666;
-  padding: 10px 0;
+.initial{
+ width:46px;
+ height:46px;
+ border-radius:50%;
+ background:#e8f0f7;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-weight:800;
+ color:var(--navy);
+ margin-bottom:12px
 }
 
-.notice {
-  background: #eef6fb;
-  border-left: 4px solid #075985;
-  padding: 12px;
-  margin-bottom: 15px;
+h3{
+ margin:0 0 5px
+}
+
+.muted{
+ color:var(--muted);
+ font-size:14px
+}
+
+.pill{
+ display:inline-block;
+ margin-top:11px;
+ padding:5px 9px;
+ border-radius:99px;
+ background:#eef2f6;
+ font-size:12px
+}
+
+.search{
+ margin-bottom:12px
+}
+
+.vote{
+ padding:15px 0;
+ border-bottom:1px solid var(--border)
+}
+
+.vote:last-child{
+ border:0
+}
+
+.vhead{
+ display:flex;
+ justify-content:space-between;
+ gap:12px
+}
+
+.date{
+ font-size:13px;
+ color:var(--muted)
+}
+
+.result{
+ font-size:13px;
+ color:var(--muted);
+ margin-top:4px
+}
+
+.votes{
+ margin-top:10px;
+ display:none
+}
+
+.row{
+ display:flex;
+ justify-content:space-between;
+ padding:7px 0;
+ font-size:14px;
+ border-top:1px solid #eef0f2
+}
+
+.yes{
+ color:var(--green);
+ font-weight:700
+}
+
+.no{
+ color:var(--red);
+ font-weight:700
+}
+
+.absent{
+ color:var(--muted);
+ font-weight:700
+}
+
+button,.link{
+ border:0;
+ background:var(--blue);
+ color:#fff;
+ padding:9px 12px;
+ border-radius:8px;
+ font-weight:700;
+ cursor:pointer;
+ text-decoration:none;
+ font-size:13px
+}
+
+.source{
+ background:#f8fafc;
+ padding:13px;
+ border-radius:10px;
+ margin-top:14px;
+ font-size:13px;
+ line-height:1.5
+}
+
+footer{
+ max-width:980px;
+ margin:auto;
+ padding:0 18px 35px;
+ color:var(--muted);
+ font-size:12px;
+ line-height:1.5
+}
+
+@media(max-width:720px){
+ .grid{
+  grid-template-columns:1fr 1fr
+ }
+
+ .hero h1{
+  font-size:34px
+ }
+
+ .vhead{
+  display:block
+ }
+
+ .vhead button{
+  margin-top:9px
+ }
+}
+
+@media(max-width:480px){
+ .grid{
+  grid-template-columns:1fr
+ }
+}
+
+.profile-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:13px;
+ margin-top:20px;
+ padding-top:18px;
+ border-top:1px solid var(--border)
+}
+
+.secondary{
+ background:#34495e;
+ margin-left:7px
+}
+
+#profile{
+ display:none;
+ margin-top:27px
+}
+
+@media(max-width:600px){
+ .profile-grid{
+  grid-template-columns:1fr
+ }
+
+ .secondary{
+  margin-left:0;
+  margin-top:8px;
+  display:inline-block
+ }
 }
 </style>
 </head>
@@ -151,857 +312,976 @@ select {
 <body>
 
 <header>
-<h1>TD Tracker</h1>
-<p>How did your TD vote?</p>
+<div class="wrap">
+
+<div class="top">
+<div class="logo">TD Tracker</div>
+<div class="badge">Prototype</div>
+</div>
+
+<div class="hero">
+<h1>How did your TD vote?</h1>
+<p>
+Find your representatives, explore recorded Dáil votes and follow the official parliamentary record.
+</p>
+</div>
+
+</div>
 </header>
 
+<main class="wrap">
 
-<div class="box">
+<div class="bar">
 
-<h2>Your constituency</h2>
+<label for="constituency">
+Your constituency
+</label>
 
-<select id="constituency">
-<option value="">Select your constituency</option>
+<select id="constituency" onchange="changeConstituency(this.value)">
+<option value="north">Tipperary North</option>
+<option value="south">Tipperary South</option>
+<option value="all">All Tipperary TDs</option>
 </select>
 
 </div>
 
+<div id="apiStatus"
+style="margin-top:14px">
+Connecting to the official Oireachtas data…
+</div>
 
-<div class="box">
+<div class="section">
 
 <h2>Your TDs</h2>
 
-<div id="status">
-Loading TD data...
-</div>
-
-<div id="tds"></div>
+<div id="tds" class="grid"></div>
 
 </div>
 
+<div class="section">
 
-<div class="box">
+<h2>Recent votes</h2>
 
-<h2>Recent Dáil votes</h2>
+<input
+id="search"
+class="search"
+placeholder="Search Bills or votes..."
+oninput="renderVotes()"
+>
 
-<div id="voteStatus" class="loading">
-Loading recent votes...
+<div id="votes" class="card"></div>
+
 </div>
-
-<div id="votes"></div>
 
 <div class="source">
-Voting data supplied from the
-<a
-href="https://www.oireachtas.ie/en/open-data/"
-target="_blank">
-Houses of the Oireachtas
-</a>.
-</div>
+
+<strong>Data note:</strong>
+This prototype uses the official Houses of the Oireachtas data feed.
+Individual votes are only displayed when they are present in the official record.
 
 </div>
+
+</main>
+
+<footer>
+
+TD Tracker is an independent civic-information prototype.
+It does not rate, recommend or endorse candidates or parties.
+
+</footer>
 
 
 <script>
 
-let allMembers = [];
-let allVotes = [];
+let tds=[];
+let votes=[];
+let apiStatus="Connecting to the official Oireachtas data…";
+
+const API="/api";
 
 
-/* ==============================
-   CONSTITUENCIES
-============================== */
+/* =========================================
+   MEMBERS
+   ========================================= */
 
-function getMemberConstituencies(member) {
+function unwrapMember(x){
 
-  const found = [];
+ const m=x.member||x;
 
-  const memberships =
-    Array.isArray(member.memberships)
-      ? member.memberships
-      : [];
+ const memberships=
+   Array.isArray(m.memberships)
+   ? m.memberships
+   : [];
 
-  memberships.forEach(wrapper => {
+ let active={};
 
-    const membership =
-      wrapper && wrapper.membership
-        ? wrapper.membership
-        : wrapper;
+ for(let i=memberships.length-1;i>=0;i--){
 
-    if (!membership) return;
+   const item=
+     memberships[i].membership ||
+     memberships[i];
 
-    let represents =
-      membership.represents || [];
+   if(item){
+     active=item;
+     break;
+   }
+ }
 
-    if (!Array.isArray(represents)) {
-      represents = [represents];
-    }
+ let party="Independent / not listed";
 
-    represents.forEach(rep => {
+ try{
 
-      if (!rep) return;
+   const parties=
+     active.parties || [];
 
-      const constituency =
-        rep.represent || {};
+   if(parties.length){
 
-      const name =
-        constituency.showAs ||
-        constituency.name ||
-        "";
+     const p=
+       parties[parties.length-1];
 
-      if (
-        name &&
-        !found.includes(name)
-      ) {
-        found.push(name);
-      }
+     party=
+       p.party?.showAs ||
+       p.showAs ||
+       party;
+   }
 
-    });
-
-  });
-
-  return found;
-}
+ }catch(e){}
 
 
-/* ==============================
-   LOAD TDs
-============================== */
+ let constituency=
+   "Constituency not listed";
 
-async function loadTDs() {
+ try{
 
-  const status =
-    document.getElementById("status");
+   const reps=
+     active.represents || [];
 
-  const select =
-    document.getElementById("constituency");
+   if(reps.length){
 
-  try {
+     constituency=
+       reps[reps.length-1]?.represent?.showAs ||
+       reps[reps.length-1]?.represent?.name ||
+       constituency;
+   }
 
-    const response =
-      await fetch("/api/members");
-
-    if (!response.ok) {
-      throw new Error(
-        "TD API returned HTTP " +
-        response.status
-      );
-    }
-
-    const data =
-      await response.json();
-
-    allMembers =
-      Array.isArray(data.results)
-        ? data.results
-        : [];
-
-    if (!allMembers.length) {
-      throw new Error(
-        "No TD records were returned"
-      );
-    }
+ }catch(e){}
 
 
-    const constituencySet =
-      new Set();
+ return {
 
+   name:
+     m.fullName ||
+     m.showAs ||
+     "Unknown member",
 
-    allMembers.forEach(result => {
+   party,
 
-      const member =
-        result.member || {};
+   constituency,
 
-      getMemberConstituencies(member)
-        .forEach(name => {
-          constituencySet.add(name);
-        });
+   email:
+     m.email ||
+     m.contactDetails?.email ||
+     "",
 
-    });
+   role:"TD",
 
+   years:"Current Dáil member",
 
-    select.innerHTML = "";
+   memberCode:
+     m.memberCode ||
+     m.id ||
+     ""
 
-    const first =
-      document.createElement("option");
-
-    first.value = "";
-
-    first.textContent =
-      "Select your constituency";
-
-    select.appendChild(first);
-
-
-    Array.from(constituencySet)
-      .sort()
-      .forEach(name => {
-
-        const option =
-          document.createElement("option");
-
-        option.value = name;
-
-        option.textContent = name;
-
-        select.appendChild(option);
-
-      });
-
-
-    status.textContent =
-      allMembers.length +
-      " TD records found.";
-
-
-    displayTDs();
-
-
-    select.onchange = function() {
-
-      displayTDs();
-      displayVotes();
-
-    };
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.innerHTML =
-      '<div class="error">' +
-      'ERROR: ' +
-      escapeHtml(error.message) +
-      '</div>';
-
-  }
+ };
 
 }
 
 
-/* ==============================
-   DISPLAY TDs
-============================== */
+/* =========================================
+   DIVISION CLEANING
+   ========================================= */
 
-function displayTDs() {
+function cleanDivision(x){
 
-  const list =
-    document.getElementById("tds");
+ const d=x.division||x;
 
-  const select =
-    document.getElementById("constituency");
+ const title=
+   d.debateSection?.showAs ||
+   d.divisionTitle ||
+   d.title ||
+   d.businessItem?.showAs ||
+   "Dáil division";
 
-  const selected =
-    select.value;
+ const date=
+   d.date ||
+   d.divisionDate ||
+   d.time ||
+   "";
 
-  let filtered =
-    allMembers;
+ const result=
+   d.result?.showAs ||
+   d.result ||
+   d.outcome ||
+   "";
 
+ return {
 
-  if (selected) {
+   raw:d,
 
-    filtered =
-      allMembers.filter(result => {
+   title,
 
-        const member =
-          result.member || {};
+   date,
 
-        return getMemberConstituencies(
-          member
-        ).includes(selected);
+   result,
 
-      });
+   members:
+     d.members || [],
 
-  }
+   tallies:
+     d.tallies || {}
 
-
-  if (!filtered.length) {
-
-    list.innerHTML =
-      "<p>No TDs found for this constituency.</p>";
-
-    return;
-
-  }
-
-
-  list.innerHTML =
-    filtered.map(result => {
-
-      const member =
-        result.member || {};
-
-      const name =
-        member.fullName ||
-        (
-          (member.firstName || "") +
-          " " +
-          (member.lastName || "")
-        ).trim();
-
-
-      return `
-        <div class="td">
-
-          <div class="name">
-            ${escapeHtml(
-              name || "Unknown TD"
-            )}
-          </div>
-
-          <div class="info">
-            TD • Dáil Éireann
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
+ };
 
 }
 
 
-/* ==============================
-   LOAD VOTES
-============================== */
+/* =========================================
+   NAME NORMALISATION
+   ========================================= */
 
-async function loadVotes() {
+function normaliseName(value){
 
-  const status =
-    document.getElementById("voteStatus");
-
-  try {
-
-    const response =
-      await fetch("/api/votes");
-
-    if (!response.ok) {
-
-      throw new Error(
-        "Vote API returned HTTP " +
-        response.status
-      );
-
-    }
-
-    const data =
-      await response.json();
-
-    allVotes =
-      Array.isArray(data.results)
-        ? data.results
-        : [];
-
-    if (!allVotes.length) {
-
-      throw new Error(
-        "No vote records were returned"
-      );
-
-    }
-
-    status.textContent =
-      allVotes.length +
-      " recent Dáil votes loaded.";
-
-    displayVotes();
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.innerHTML =
-      '<div class="error">' +
-      'ERROR: ' +
-      escapeHtml(error.message) +
-      '</div>';
-
-  }
+ return String(value||"")
+   .toLowerCase()
+   .normalize("NFD")
+   .replace(/[\u0300-\u036f]/g,"")
+   .replace(/[^a-z0-9]/g,"");
 
 }
 
 
-/* ==============================
-   NORMALISE NAME
-============================== */
+/* =========================================
+   GET MEMBER CODE
+   ========================================= */
 
-function normaliseName(name) {
+function getMemberCode(member){
 
-  return String(name || "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+ if(!member)return"";
 
-}
+ return String(
 
+   member.memberCode ||
 
-/* ==============================
-   MEMBER CODE
-============================== */
+   member.code ||
 
-function getMemberCode(member) {
+   member.member_id ||
 
-  return (
-    member.memberCode ||
-    member.code ||
-    member.member_id ||
-    ""
-  );
+   member.id ||
+
+   member.member?.memberCode ||
+
+   ""
+
+ ).toLowerCase();
 
 }
 
 
-/* ==============================
-   TD NAME
-============================== */
+/* =========================================
+   GET MEMBER NAME
+   ========================================= */
 
-function getMemberName(member) {
+function getMemberName(member){
 
-  return (
-    member.fullName ||
-    (
-      (member.firstName || "") +
-      " " +
-      (member.lastName || "")
-    ).trim()
-  );
+ if(!member)return"";
+
+ return (
+
+   member.fullName ||
+
+   member.showAs ||
+
+   member.name ||
+
+   (
+
+     (member.firstName||"")+
+     " "+
+     (member.lastName||"")
+
+   ).trim()
+
+ );
 
 }
 
 
-/* ==============================
-   MATCH TD
-============================== */
+/* =========================================
+   CHECK ONE VOTE MEMBER
+   ========================================= */
 
-function memberMatches(
-  voteMember,
-  member
-) {
+function sameTD(voteMember,selectedMember){
 
-  if (!voteMember || !member) {
-    return false;
-  }
+ if(!voteMember||!selectedMember)
+   return false;
 
 
-  const vote =
-    voteMember.member ||
-    voteMember;
+ const vm=
+   voteMember.member ||
+   voteMember;
 
 
-  /* First try exact member code */
+ const voteCode=
+   getMemberCode(vm);
 
-  const voteCode =
-    vote.memberCode ||
-    vote.code ||
-    "";
-
-  const memberCode =
-    getMemberCode(member);
+ const selectedCode=
+   getMemberCode(selectedMember);
 
 
-  if (
-    voteCode &&
-    memberCode &&
-    voteCode === memberCode
-  ) {
-    return true;
-  }
+ if(
+   voteCode &&
+   selectedCode &&
+   voteCode===selectedCode
+ ){
+   return true;
+ }
 
 
-  /*
-    Second try names.
+ const voteName=
+   normaliseName(
+     getMemberName(vm)
+   );
 
-    Oireachtas vote records can use
-    "Kelly, Alan" while the members
-    API can use "Alan Kelly".
-  */
-
-  const voteName =
-    vote.showAs ||
-    vote.name ||
-    vote.fullName ||
-    "";
+ const selectedName=
+   normaliseName(
+     getMemberName(selectedMember)
+   );
 
 
-  const memberName =
-    getMemberName(member);
+ if(
+   voteName &&
+   selectedName &&
+   voteName===selectedName
+ ){
+   return true;
+ }
 
 
-  if (
-    voteName &&
-    memberName
-  ) {
+ return false;
 
-    const a =
-      normaliseName(voteName);
-
-    const b =
-      normaliseName(memberName);
-
-
-    if (a === b) {
-      return true;
-    }
-
-
-    /*
-      Compare the two names as words,
-      regardless of order.
-    */
-
-    const wordsA =
-      a.split(" ").sort().join("");
-
-    const wordsB =
-      b.split(" ").sort().join("");
-
-
-    if (
-      wordsA &&
-      wordsB &&
-      wordsA === wordsB
-    ) {
-      return true;
-    }
-
-  }
-
-
-  return false;
 }
 
 
-/* ==============================
-   GET TD VOTE
-============================== */
+/* =========================================
+   SEARCH VOTE MEMBERS
+   ========================================= */
 
-function getTDVote(
-  division,
-  member
-) {
+function searchVoteData(data,selectedMember){
 
-  const tallies =
-    division.tallies || {};
+ if(!data)
+   return null;
 
 
-  let tallyList =
-    tallies.tallies ||
-    [];
+ /* ARRAY */
+
+ if(Array.isArray(data)){
+
+   for(const item of data){
+
+     const found=
+       searchVoteData(
+         item,
+         selectedMember
+       );
+
+     if(found)
+       return found;
+   }
+
+   return null;
+ }
 
 
-  if (!Array.isArray(tallyList)) {
-    return "Not recorded";
-  }
+ /* OBJECT */
 
+ if(typeof data==="object"){
 
-  for (const item of tallyList) {
+   /*
+      IMPORTANT:
 
-    if (!item) {
-      continue;
-    }
-
-
-    /*
-      The vote category is stored
-      in showAs.
+      The Oireachtas division data stores
+      the vote category and the members
+      together inside the tally.
 
       Example:
+
       showAs: "Tá"
       tally: 65
       members: [...]
-    */
+   */
 
-    const voteName =
-      item.showAs ||
-      item.name ||
-      item.label ||
-      "Recorded";
+   if(data.members){
 
+     let members=
+       data.members;
 
-    let members =
-      item.members ||
-      [];
+     if(!Array.isArray(members)){
 
+       members=
+         Object.values(members);
 
-    if (!Array.isArray(members)) {
+     }
 
-      members =
-        Object.values(members);
 
-    }
+     for(
+       const voteMember of members
+     ){
 
+       if(
+         sameTD(
+           voteMember,
+           selectedMember
+         )
+       ){
 
-    for (const voteMember of members) {
+         return (
 
-      if (
-        memberMatches(
-          voteMember,
-          member
-        )
-      ) {
+           data.showAs ||
 
-        return voteName;
+           data.name ||
 
-      }
+           data.label ||
 
-    }
+           data.vote ||
 
-  }
+           data.category ||
 
+           "Recorded"
 
-  return "Not recorded";
-}
+         );
 
+       }
 
-/* ==============================
-   SUBJECT
-============================== */
+     }
 
-function getSubject(division) {
+   }
 
-  const subject =
-    division.subject ||
-    division.voteNote ||
-    "";
 
+   /*
+      Search deeper in case the API
+      wraps the tallies in another object.
+   */
 
-  if (typeof subject === "string") {
-    return subject;
-  }
+   for(
+     const key of Object.keys(data)
+   ){
 
+     const found=
+       searchVoteData(
+         data[key],
+         selectedMember
+       );
 
-  if (
-    subject &&
-    typeof subject === "object"
-  ) {
+     if(found)
+       return found;
 
-    return (
-      subject.showAs ||
-      subject.text ||
-      subject.name ||
-      subject.title ||
-      subject.value ||
-      "Dáil division"
-    );
+   }
 
-  }
+ }
 
-
-  return "Dáil division";
-}
-
-
-/* ==============================
-   DISPLAY VOTES
-============================== */
-
-function displayVotes() {
-
-  const container =
-    document.getElementById("votes");
-
-  const select =
-    document.getElementById("constituency");
-
-  const selected =
-    select.value;
-
-
-  if (!selected) {
-
-    container.innerHTML =
-      '<div class="notice">' +
-      'Select your constituency above ' +
-      'to see how your TDs voted.' +
-      '</div>';
-
-    return;
-
-  }
-
-
-  const selectedMembers =
-    allMembers.filter(result => {
-
-      const member =
-        result.member || {};
-
-      return getMemberConstituencies(
-        member
-      ).includes(selected);
-
-    });
-
-
-  if (!selectedMembers.length) {
-
-    container.innerHTML =
-      "<p>No TDs found.</p>";
-
-    return;
-
-  }
-
-
-  const recentVotes =
-    allVotes.slice(0, 20);
-
-
-  container.innerHTML =
-    recentVotes.map(result => {
-
-      const division =
-        result.division ||
-        result;
-
-
-      const date =
-        division.date ||
-        "";
-
-
-      const subject =
-        getSubject(division);
-
-
-      const officialUrl =
-        division.uri ||
-        division.url ||
-        "";
-
-
-      const tdResults =
-        selectedMembers.map(
-          memberResult => {
-
-            const member =
-              memberResult.member ||
-              {};
-
-
-            const name =
-              getMemberName(member);
-
-
-            const vote =
-              getTDVote(
-                division,
-                member
-              );
-
-
-            return `
-              <div class="td-vote">
-
-                <div class="td-vote-name">
-                  ${escapeHtml(
-                    name || "Unknown TD"
-                  )}
-                </div>
-
-                <div class="vote-result">
-                  ${escapeHtml(vote)}
-                </div>
-
-              </div>
-            `;
-
-          }
-        ).join("");
-
-
-      return `
-        <div class="vote">
-
-          <div class="vote-date">
-            ${escapeHtml(
-              formatDate(date)
-            )}
-          </div>
-
-          <div class="vote-title">
-            ${escapeHtml(subject)}
-          </div>
-
-          ${tdResults}
-
-          ${
-            officialUrl
-              ? `
-                <a
-                  class="official"
-                  href="${escapeHtml(
-                    officialUrl
-                  )}"
-                  target="_blank">
-                  View official Oireachtas record
-                </a>
-              `
-              : ""
-          }
-
-        </div>
-      `;
-
-    }).join("");
+ return null;
 
 }
 
 
-/* ==============================
-   DATE
-============================== */
+/* =========================================
+   GET TD VOTE
+   ========================================= */
 
-function formatDate(date) {
+function memberVoteFor(
+ division,
+ member
+){
 
-  if (!date) {
-    return "";
-  }
+ if(!division||!member)
+   return "Not recorded";
 
-  try {
 
-    return new Date(date)
-      .toLocaleDateString(
-        "en-IE",
-        {
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-        }
-      );
+ /*
+    FIRST:
+    search the official tallies.
+ */
 
-  } catch {
+ const tallyResult=
+   searchVoteData(
+     division.tallies,
+     member
+   );
 
-    return date;
 
-  }
+ if(tallyResult)
+   return tallyResult;
+
+
+ /*
+    FALLBACK:
+    some API responses may put
+    members directly on the division.
+ */
+
+ const directResult=
+   searchVoteData(
+     division.members,
+     member
+   );
+
+
+ if(directResult)
+   return directResult;
+
+
+ return "Not recorded";
 
 }
 
 
-/* ==============================
-   HTML SAFETY
-============================== */
+/* =========================================
+   LOAD LIVE DATA
+   ========================================= */
 
-function escapeHtml(text) {
+async function loadLiveData(){
 
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+ try{
+
+   const[
+     memberResponse,
+     voteResponse
+   ]=
+   await Promise.all([
+
+     fetch(
+       `${API}/members?skip=0&limit=500`
+     ),
+
+     fetch(
+       `${API}/votes?skip=0&limit=50&date_start=2025-01-01&date_end=2026-10-01`
+     )
+
+   ]);
+
+
+   if(
+     !memberResponse.ok ||
+     !voteResponse.ok
+   ){
+
+     throw new Error(
+       "API request failed"
+     );
+
+   }
+
+
+   const memberData=
+     await memberResponse.json();
+
+   const voteData=
+     await voteResponse.json();
+
+
+   tds=
+     (memberData.results||[])
+     .map(unwrapMember);
+
+
+   votes=
+     (voteData.results||[])
+     .map(cleanDivision)
+     .filter(v=>v.title)
+     .slice(0,50);
+
+
+   apiStatus=
+     `Live Oireachtas data connected · ${tds.length} Dáil members · ${votes.length} recent divisions`;
+
+ }catch(e){
+
+   console.error(e);
+
+   apiStatus=
+     "Live Oireachtas data could not be loaded.";
+
+ }
+
+
+ renderAllLive();
 
 }
 
 
-/* ==============================
+/* =========================================
+   INITIALS
+   ========================================= */
+
+function initials(name){
+
+ return String(name||"")
+   .split(" ")
+   .map(
+     x=>
+       x.replace(
+         /[^A-Za-zÁÉÍÓÚáéíóú]/g,
+         ""
+       )[0]
+   )
+   .filter(Boolean)
+   .slice(0,2)
+   .join("");
+
+}
+
+
+/* =========================================
+   RENDER TDs
+   ========================================= */
+
+function renderTDs(){
+
+ const selected=
+   document.getElementById(
+     "constituency"
+   ).value;
+
+
+ let list=tds;
+
+
+ if(selected==="north"){
+
+   list=
+     tds.filter(
+       t=>
+         /Tipperary North/i
+         .test(t.constituency)
+     );
+
+ }
+
+
+ if(selected==="south"){
+
+   list=
+     tds.filter(
+       t=>
+         /Tipperary South/i
+         .test(t.constituency)
+     );
+
+ }
+
+
+ if(selected==="all"){
+
+   list=
+     tds.filter(
+       t=>
+         /Tipperary/i
+         .test(t.constituency)
+     );
+
+ }
+
+
+ if(
+   !list.length &&
+   tds.length
+ ){
+
+   list=tds;
+
+ }
+
+
+ document.getElementById(
+   "tds"
+ ).innerHTML=
+
+ list.slice(0,20)
+ .map(t=>`
+
+   <div class="card td">
+
+     <div class="initial">
+       ${initials(t.name)}
+     </div>
+
+     <h3>
+       ${t.name} TD
+     </h3>
+
+     <div class="muted">
+       ${t.party}
+     </div>
+
+     <span class="pill">
+       ${t.constituency}
+     </span>
+
+   </div>
+
+ `)
+ .join("")
+
+ ||
+
+ "<div class='muted'>Waiting for live member data…</div>";
+
+}
+
+
+/* =========================================
+   RENDER VOTES
+   ========================================= */
+
+function renderVotes(){
+
+ const searchBox=
+   document.getElementById(
+     "search"
+   );
+
+ const q=
+   (searchBox?.value||"")
+   .toLowerCase();
+
+
+ const filtered=
+   votes.filter(v=>
+
+     (
+       v.title+
+       " "+
+       v.date
+     )
+     .toLowerCase()
+     .includes(q)
+
+   );
+
+
+ document.getElementById(
+   "votes"
+ ).innerHTML=
+
+ filtered.map(
+   (v,i)=>`
+
+   <div class="vote">
+
+     <div class="vhead">
+
+       <div>
+
+         <strong>
+           ${v.title}
+         </strong>
+
+         <div class="date">
+           ${v.date||"Date not supplied"}
+         </div>
+
+         <div class="result">
+
+           ${
+             v.result
+             ? "Result: "+v.result
+             : "Official division record"
+           }
+
+         </div>
+
+       </div>
+
+       <button
+         onclick="toggleVote(${i})"
+       >
+         View TD votes
+       </button>
+
+     </div>
+
+
+     <div
+       id="vote${i}"
+       class="votes"
+     >
+
+       ${
+         tds
+         .filter(
+           t=>
+             /Tipperary/i
+             .test(t.constituency)
+         )
+         .map(t=>{
+
+           const mv=
+             memberVoteFor(
+               v,
+               t
+             );
+
+
+           let cls="";
+
+
+           if(mv==="Tá")
+             cls="yes";
+
+
+           if(mv==="Níl")
+             cls="no";
+
+
+           if(
+             mv==="Absent" ||
+             mv==="Abstained"
+           )
+             cls="absent";
+
+
+           return `
+
+             <div class="row">
+
+               <span>
+                 ${t.name}
+               </span>
+
+               <span class="${cls}">
+                 ${mv}
+               </span>
+
+             </div>
+
+           `;
+
+         })
+         .join("")
+       }
+
+
+       <div class="source">
+
+         <strong>
+           Official source:
+         </strong>
+
+         This division is loaded from
+         the Houses of the Oireachtas
+         data feed.
+
+         Individual member votes are
+         displayed only when present in
+         the official division record.
+
+       </div>
+
+
+       <a
+         class="link"
+         href="https://www.oireachtas.ie/en/debates/votes/"
+         target="_blank"
+       >
+         Open official Oireachtas votes
+       </a>
+
+     </div>
+
+   </div>
+
+ `
+ )
+ .join("")
+
+ ||
+
+ "<div class='muted'>No matching live divisions.</div>";
+
+}
+
+
+/* =========================================
+   OPEN/CLOSE VOTES
+   ========================================= */
+
+function toggleVote(i){
+
+ const e=
+   document.getElementById(
+     "vote"+i
+   );
+
+
+ if(
+   e.style.display==="block"
+ ){
+
+   e.style.display="none";
+
+ }else{
+
+   e.style.display="block";
+
+ }
+
+}
+
+
+/* =========================================
+   CONSTITUENCY CHANGE
+   ========================================= */
+
+function changeConstituency(){
+
+ renderTDs();
+
+ renderVotes();
+
+}
+
+
+/* =========================================
+   REFRESH EVERYTHING
+   ========================================= */
+
+function renderAllLive(){
+
+ renderTDs();
+
+ renderVotes();
+
+ const e=
+   document.getElementById(
+     "apiStatus"
+   );
+
+ if(e)
+   e.textContent=
+     apiStatus;
+
+}
+
+
+/* =========================================
    START
-============================== */
+   ========================================= */
 
-loadTDs();
+renderTDs();
 
-loadVotes();
+renderVotes();
+
+loadLiveData();
 
 </script>
 
