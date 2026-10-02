@@ -22,6 +22,7 @@ button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-
 .close{background:#667085;margin-top:15px}.profile-votes{margin-top:18px}.profile-note{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
 .source{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
 footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-size:12px;line-height:1.5}
+.section-help{margin:-5px 0 13px;color:var(--muted);font-size:14px;line-height:1.5}.vote-tools{margin-bottom:12px}.vote-tools .search{margin-bottom:9px}.vote-key{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);padding:0 2px}.vote-key span{white-space:nowrap}.vote-card-title{font-size:16px;line-height:1.35}.vote-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}.meta-pill{font-size:12px;color:var(--muted);background:#f3f5f7;border-radius:99px;padding:4px 8px}.see-votes{min-width:125px}.vote-summary{margin-top:12px;padding:10px 12px;background:#f8fafc;border-radius:10px;font-size:13px;color:#475467}.vote-choice{font-weight:800}.profile-choice-box{display:inline-block;min-width:58px;text-align:center;padding:5px 8px;border-radius:8px;background:#f3f5f7}.profile-choice-box.yes{background:#edf8f1}.profile-choice-box.no{background:#fff0ee}.profile-choice-box.absent{background:#f3f5f7}
 @media(max-width:720px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:34px}.vhead{display:block}.vhead button{margin-top:9px}}
 @media(max-width:480px){.grid{grid-template-columns:1fr}}
 
@@ -97,12 +98,20 @@ footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-s
 </div>
 
 <div class="section">
-<h2>Recent votes</h2>
-<input id="search" class="search" placeholder="Search Bills or votes..." oninput="renderVotes()">
+<h2>Recent Dáil votes</h2>
+<p class="section-help">Search for a Bill, question or vote, then see how the TDs in your selected constituency voted.</p>
+<div class="vote-tools">
+  <input id="search" class="search" placeholder="🔎 Search Bills, questions or votes…" oninput="renderVotes()">
+  <div class="vote-key" aria-label="Vote key">
+    <span><b class="yes">Tá</b> Yes</span>
+    <span><b class="no">Níl</b> No</span>
+    <span><b class="absent">—</b> Not recorded</span>
+  </div>
+</div>
 <div id="votes" class="card"></div>
 </div>
 
-<div class="source"><strong>Data note:</strong> TDs and recorded votes are loaded from the official Houses of the Oireachtas open-data feed. Individual member votes are only displayed when present in the official division record.</div>
+<div class="source"><strong>How to use TD Tracker:</strong> Choose your constituency above, select a TD to see their recent recorded votes, or search the recent Dáil votes below. <strong>Tá</strong> means yes, <strong>Níl</strong> means no. “Not recorded” means an individual vote was not present in the official division record.</div>
 </main>
 
 <footer>TD Tracker is an independent civic-information prototype. It does not rate, recommend or endorse candidates or parties.</footer>
@@ -468,7 +477,7 @@ function showProfile(index){
        if(mv==="Tá")cls="yes";
        if(mv==="Níl")cls="no";
        if(mv==="Absent"||mv==="Abstained")cls="absent";
-       return `<div class="profile-vote-row"><span class="profile-vote-title">${v.title}<span class="date" style="display:block;margin-top:3px">${v.date||""}</span></span><span class="profile-vote-choice ${cls}">${mv}</span></div>`;
+       return `<div class="profile-vote-row"><span class="profile-vote-title">${v.title}<span class="date" style="display:block;margin-top:3px">${v.date||""}</span></span><span class="profile-vote-choice profile-choice-box ${cls}">${mv}</span></div>`;
      }).join("") : "<div class='muted'>No recent votes available.</div>"}
    </div>
 
@@ -504,41 +513,53 @@ function closeProfile(){
 
 function renderVotes(){
  const searchBox=document.getElementById("search");
- const q=(searchBox?.value||"").toLowerCase();
- const filtered=votes.filter(v=>(v.title+" "+v.date).toLowerCase().includes(q));
+ const q=(searchBox?.value||"").trim().toLowerCase();
+ const filtered=votes.filter(v=>(v.title+" "+v.date+" "+v.result).toLowerCase().includes(q));
  const displayedTDs=getDisplayedTDs();
+ const selected=document.getElementById("constituency")?.value||"all";
+ const label=selected==="all"?"All Dáil members":`${displayedTDs.length} TD${displayedTDs.length===1?"":"s"} in your constituency`;
 
  document.getElementById("votes").innerHTML=
- filtered.map((v,i)=>`
+ filtered.map((v,i)=>{
+   const id=`vote${i}`;
+   const choices=displayedTDs.map(t=>memberVoteFor(v,t));
+   const yes=choices.filter(x=>x==="Tá").length;
+   const no=choices.filter(x=>x==="Níl").length;
+   const recorded=choices.filter(x=>x!=="Not recorded").length;
+   const summary=displayedTDs.length
+     ? `${yes} Tá · ${no} Níl · ${displayedTDs.length-recorded} not recorded`
+     : "Choose a constituency above to see how your TDs voted.";
+   return `
    <div class="vote">
      <div class="vhead">
-       <div>
-         <strong>${v.title}</strong>
-         <div class="date">${v.date||"Date not supplied"}</div>
-         <div class="result">${v.result?"Result: "+v.result:"Official division record"}</div>
+       <div style="min-width:0">
+         <div class="vote-card-title"><strong>${v.title}</strong></div>
+         <div class="vote-meta">
+           <span class="meta-pill">${v.date||"Date not supplied"}</span>
+           ${v.result?`<span class="meta-pill">Result: ${v.result}</span>`:""}
+         </div>
+         <div class="vote-summary">${summary}</div>
        </div>
-       <button onclick="toggleVote(${i})">View TD votes</button>
+       <button class="see-votes" onclick="toggleVote(${i})">See how they voted</button>
      </div>
-     <div id="vote${i}" class="votes">
+     <div id="${id}" class="votes">
+       <div class="muted" style="margin-bottom:8px">${label}</div>
        ${displayedTDs.map(t=>{
          const mv=memberVoteFor(v,t);
          let cls="";
          if(mv==="Tá")cls="yes";
          if(mv==="Níl")cls="no";
-         if(mv==="Absent"||mv==="Abstained")cls="absent";
-         return `<div class="row"><span>${t.name}</span><span class="${cls}">${mv}</span></div>`;
+         if(mv==="Absent"||mv==="Abstained"||mv==="Not recorded")cls="absent";
+         return `<div class="row"><span>${t.name}</span><span class="vote-choice ${cls}">${mv}</span></div>`;
        }).join("")}
        <div class="source">
-         <strong>Official source:</strong>
-         This division is loaded from the Houses of the Oireachtas data feed.
-         Individual member votes are displayed only when present in the official division record.
+         <strong>Official record:</strong> This division is loaded from the Houses of the Oireachtas data feed. Individual member votes are shown only when present in the official division record.
        </div>
        <a class="link" href="https://www.oireachtas.ie/en/debates/votes/" target="_blank">Open official Oireachtas votes</a>
      </div>
-   </div>
- `).join("")||"<div class='muted'>No matching live divisions.</div>";
+   </div>`;
+ }).join("")||"<div class='muted'>No matching Dáil votes found. Try a different search.</div>";
 }
-
 function toggleVote(i){
  const e=document.getElementById("vote"+i);
  e.style.display=e.style.display==="block"?"none":"block";
