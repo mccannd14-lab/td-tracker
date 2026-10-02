@@ -276,7 +276,7 @@ function initials(name){
 
 function safePhotoUrl(url){
  const s=String(url||"").trim();
- return /^https?:\\/\\//i.test(s) ? s : "";
+ return /^https?:\/\//i.test(s) ? s : "";
 }
 
 function memberPhotoMarkup(t, profile=false){
