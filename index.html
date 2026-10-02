@@ -119,6 +119,64 @@ footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-s
  flex:0 0 auto !important;
  width:auto !important;
 }
+
+/* FINAL FIX FOR EXPANDED VOTE DETAILS */
+.vote{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  clear:both!important;
+  overflow:hidden!important;
+}
+.vote .vhead{
+  width:100%!important;
+  max-width:100%!important;
+}
+.vote .votes{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  clear:both!important;
+  overflow:hidden!important;
+  position:static!important;
+}
+.vote .votes .row{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  clear:both!important;
+}
+.vote .votes .source{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  clear:both!important;
+  float:none!important;
+  overflow-wrap:anywhere!important;
+}
+.vote .votes .link{
+  display:inline-block!important;
+  width:auto!important;
+  max-width:100%!important;
+  clear:both!important;
+  float:none!important;
+}
+@media(max-width:720px){
+  .vote .vhead{
+    display:block!important;
+  }
+  .vote .vhead button{
+    display:inline-block!important;
+    margin-top:10px!important;
+  }
+  .vote .votes .row{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+  }
+}
 </style>
 </head>
 <body>
