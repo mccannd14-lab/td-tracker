@@ -209,7 +209,7 @@ let allVotes = [];
 
 
 /* ==============================
-   GET CONSTITUENCIES
+   CONSTITUENCIES
 ============================== */
 
 function getMemberConstituencies(member) {
@@ -228,9 +228,7 @@ function getMemberConstituencies(member) {
         ? wrapper.membership
         : wrapper;
 
-    if (!membership) {
-      return;
-    }
+    if (!membership) return;
 
     let represents =
       membership.represents || [];
@@ -241,9 +239,7 @@ function getMemberConstituencies(member) {
 
     represents.forEach(rep => {
 
-      if (!rep) {
-        return;
-      }
+      if (!rep) return;
 
       const constituency =
         rep.represent || {};
@@ -286,12 +282,10 @@ async function loadTDs() {
       await fetch("/api/members");
 
     if (!response.ok) {
-
       throw new Error(
         "TD API returned HTTP " +
         response.status
       );
-
     }
 
     const data =
@@ -303,11 +297,9 @@ async function loadTDs() {
         : [];
 
     if (!allMembers.length) {
-
       throw new Error(
         "No TD records were returned"
       );
-
     }
 
 
@@ -329,7 +321,6 @@ async function loadTDs() {
 
 
     select.innerHTML = "";
-
 
     const first =
       document.createElement("option");
@@ -369,7 +360,6 @@ async function loadTDs() {
     select.onchange = function() {
 
       displayTDs();
-
       displayVotes();
 
     };
@@ -533,6 +523,19 @@ async function loadVotes() {
 
 
 /* ==============================
+   NORMALISE NAME
+============================== */
+
+function normaliseName(name) {
+
+  return String(name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+}
+
+
+/* ==============================
    MEMBER CODE
 ============================== */
 
@@ -549,43 +552,145 @@ function getMemberCode(member) {
 
 
 /* ==============================
-   FIND TD VOTE
+   TD NAME
 ============================== */
 
-function getTDVote(division, member) {
+function getMemberName(member) {
+
+  return (
+    member.fullName ||
+    (
+      (member.firstName || "") +
+      " " +
+      (member.lastName || "")
+    ).trim()
+  );
+
+}
+
+
+/* ==============================
+   MATCH TD
+============================== */
+
+function memberMatches(
+  voteMember,
+  member
+) {
+
+  if (!voteMember || !member) {
+    return false;
+  }
+
+
+  const vote =
+    voteMember.member ||
+    voteMember;
+
+
+  /* First try exact member code */
+
+  const voteCode =
+    vote.memberCode ||
+    vote.code ||
+    "";
 
   const memberCode =
     getMemberCode(member);
 
-  if (!memberCode) {
-    return "Not recorded";
+
+  if (
+    voteCode &&
+    memberCode &&
+    voteCode === memberCode
+  ) {
+    return true;
   }
 
+
+  /*
+    Second try names.
+
+    Oireachtas vote records can use
+    "Kelly, Alan" while the members
+    API can use "Alan Kelly".
+  */
+
+  const voteName =
+    vote.showAs ||
+    vote.name ||
+    vote.fullName ||
+    "";
+
+
+  const memberName =
+    getMemberName(member);
+
+
+  if (
+    voteName &&
+    memberName
+  ) {
+
+    const a =
+      normaliseName(voteName);
+
+    const b =
+      normaliseName(memberName);
+
+
+    if (a === b) {
+      return true;
+    }
+
+
+    /*
+      Compare the two names as words,
+      regardless of order.
+    */
+
+    const wordsA =
+      a.split(" ").sort().join("");
+
+    const wordsB =
+      b.split(" ").sort().join("");
+
+
+    if (
+      wordsA &&
+      wordsB &&
+      wordsA === wordsB
+    ) {
+      return true;
+    }
+
+  }
+
+
+  return false;
+}
+
+
+/* ==============================
+   GET TD VOTE
+============================== */
+
+function getTDVote(
+  division,
+  member
+) {
 
   const tallies =
     division.tallies || {};
 
 
-  /*
-    Oireachtas structure:
-
-    tallies
-      └── tallies
-          ├── showAs
-          ├── tally
-          └── members
-              └── member
-  */
-
-
   let tallyList =
-    tallies.tallies || [];
+    tallies.tallies ||
+    [];
 
 
   if (!Array.isArray(tallyList)) {
-
     return "Not recorded";
-
   }
 
 
@@ -597,20 +702,25 @@ function getTDVote(division, member) {
 
 
     /*
-      IMPORTANT:
-      item.tally is the NUMBER of votes.
-      The vote name is item.showAs.
+      The vote category is stored
+      in showAs.
+
+      Example:
+      showAs: "Tá"
+      tally: 65
+      members: [...]
     */
 
     const voteName =
       item.showAs ||
       item.name ||
       item.label ||
-      "";
+      "Recorded";
 
 
     let members =
-      item.members || [];
+      item.members ||
+      [];
 
 
     if (!Array.isArray(members)) {
@@ -623,34 +733,14 @@ function getTDVote(division, member) {
 
     for (const voteMember of members) {
 
-      if (!voteMember) {
-        continue;
-      }
-
-
-      const m =
-        voteMember.member ||
-        voteMember;
-
-
-      if (!m) {
-        continue;
-      }
-
-
-      const code =
-        m.memberCode ||
-        m.code ||
-        "";
-
-
       if (
-        code &&
-        code === memberCode
+        memberMatches(
+          voteMember,
+          member
+        )
       ) {
 
-        return voteName ||
-          "Recorded";
+        return voteName;
 
       }
 
@@ -664,12 +754,12 @@ function getTDVote(division, member) {
 
 
 /* ==============================
-   GET SUBJECT
+   SUBJECT
 ============================== */
 
 function getSubject(division) {
 
-  let subject =
+  const subject =
     division.subject ||
     division.voteNote ||
     "";
@@ -790,12 +880,7 @@ function displayVotes() {
 
 
             const name =
-              member.fullName ||
-              (
-                (member.firstName || "") +
-                " " +
-                (member.lastName || "")
-              ).trim();
+              getMemberName(member);
 
 
             const vote =
