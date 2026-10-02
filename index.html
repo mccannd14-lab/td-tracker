@@ -112,13 +112,24 @@ function cleanDivision(x){
      d.subject?.title ||
      "";
 
- const title=
+ let title=
    subjectValue ||
    d.debateSection?.showAs ||
    d.divisionTitle ||
    d.title ||
    d.businessItem?.showAs ||
    "Dáil division";
+
+ /* Clean awkward punctuation in the official subject text */
+ title=String(title)
+   .replace(/\s+/g," ")
+   .trim()
+   .replace(/^Question put\s*:\s*[:.]?\s*/i,"Question put — ")
+   .replace(/^Amendment put\s*:\s*[:.]?\s*/i,"Amendment put");
+
+ if(/^Question put\s*[—-]?\s*$/i.test(title)){
+   title="Question put";
+ }
 
  const date=d.date||d.divisionDate||d.time||"";
  const result=d.result?.showAs||d.result||d.outcome||"";
