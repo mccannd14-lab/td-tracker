@@ -21,7 +21,7 @@
     header {
       background: #075985;
       color: white;
-      padding: 28px 20px;
+      padding: 30px 20px;
       text-align: center;
     }
 
@@ -59,7 +59,7 @@
     }
 
     .td {
-      padding: 16px 0;
+      padding: 17px 0;
       border-bottom: 1px solid #ddd;
     }
 
@@ -73,7 +73,7 @@
     }
 
     .info {
-      margin-top: 4px;
+      margin-top: 5px;
       color: #666;
     }
 
@@ -85,6 +85,11 @@
     .error {
       color: #b00020;
       font-weight: bold;
+    }
+
+    .vote-placeholder {
+      color: #666;
+      line-height: 1.5;
     }
 
     .source {
@@ -106,15 +111,21 @@
   <p>How did your TD vote?</p>
 </header>
 
+
+<!-- CONSTITUENCY -->
+
 <div class="box">
 
   <h2>Your constituency</h2>
 
   <select id="constituency">
-    <option value="">Loading constituencies...</option>
+    <option value="">Select your constituency</option>
   </select>
 
 </div>
+
+
+<!-- TDs -->
 
 <div class="box">
 
@@ -128,29 +139,44 @@
 
 </div>
 
+
+<!-- VOTES -->
+
 <div class="box">
 
   <h2>Recent Dáil votes</h2>
 
-  <p>
-    Vote information will be connected next.
-  </p>
+  <div class="vote-placeholder">
+    <p>
+      The live Dáil voting records will appear here next.
+    </p>
+
+    <p>
+      Each vote will be linked to the official
+      Houses of the Oireachtas record.
+    </p>
+  </div>
 
   <div class="source">
     Data supplied from the
-    <a href="https://www.oireachtas.ie/en/open-data/" target="_blank">
+    <a
+      href="https://www.oireachtas.ie/en/open-data/"
+      target="_blank">
       Houses of the Oireachtas
     </a>.
   </div>
 
 </div>
 
+
 <script>
 
 let allMembers = [];
 
 
-/* LOAD TD DATA */
+/* ==============================
+   LOAD TDs
+============================== */
 
 async function loadTDs() {
 
@@ -166,9 +192,12 @@ async function loadTDs() {
       await fetch("/api/members");
 
     if (!response.ok) {
+
       throw new Error(
-        "API returned HTTP " + response.status
+        "API returned HTTP " +
+        response.status
       );
+
     }
 
     const data =
@@ -177,12 +206,19 @@ async function loadTDs() {
     allMembers =
       data.results || [];
 
+
     if (!allMembers.length) {
-      throw new Error("No TD records returned");
+
+      throw new Error(
+        "No TD records were returned"
+      );
+
     }
 
 
-    /* FIND CONSTITUENCIES */
+    /* ==========================
+       FIND CONSTITUENCIES
+    ========================== */
 
     const constituencies =
       new Set();
@@ -194,242 +230,4 @@ async function loadTDs() {
         result.member || {};
 
       const memberships =
-        member.memberships || [];
-
-
-      memberships.forEach(wrapper => {
-
-        const membership =
-          wrapper.membership || {};
-
-
-        const represents =
-          membership.represents || [];
-
-
-        represents.forEach(rep => {
-
-          const constituency =
-            rep.represent || {};
-
-
-          if (constituency.showAs) {
-
-            constituencies.add(
-              constituency.showAs
-            );
-
-          }
-
-        });
-
-      });
-
-    });
-
-
-    /* BUILD DROPDOWN */
-
-    constituencySelect.innerHTML = "";
-
-
-    const allOption =
-      document.createElement("option");
-
-    allOption.value = "";
-
-    allOption.textContent =
-      "All constituencies";
-
-    constituencySelect.appendChild(
-      allOption
-    );
-
-
-    Array.from(constituencies)
-      .sort()
-      .forEach(name => {
-
-        const option =
-          document.createElement("option");
-
-        option.value = name;
-
-        option.textContent = name;
-
-        constituencySelect.appendChild(
-          option
-        );
-
-      });
-
-
-    /* SELECT TIPPERARY */
-
-    const tipperary =
-      Array.from(constituencies)
-        .find(name =>
-          name.toLowerCase()
-            .includes("tipperary")
-        );
-
-
-    if (tipperary) {
-
-      constituencySelect.value =
-        tipperary;
-
-    }
-
-
-    status.textContent =
-      allMembers.length +
-      " TD records found.";
-
-
-    displayTDs();
-
-
-    constituencySelect.onchange =
-      displayTDs;
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.innerHTML =
-      '<div class="error">' +
-      'ERROR: ' +
-      escapeHtml(error.message) +
-      '</div>';
-
-  }
-
-}
-
-
-/* DISPLAY TDs */
-
-function displayTDs() {
-
-  const list =
-    document.getElementById("tds");
-
-  const selected =
-    document.getElementById("constituency")
-      .value;
-
-
-  let filtered =
-    allMembers;
-
-
-  if (selected) {
-
-    filtered =
-      allMembers.filter(result => {
-
-        const member =
-          result.member || {};
-
-        const memberships =
-          member.memberships || [];
-
-
-        return memberships.some(wrapper => {
-
-          const membership =
-            wrapper.membership || {};
-
-
-          const represents =
-            membership.represents || [];
-
-
-          return represents.some(rep => {
-
-            const constituency =
-              rep.represent || {};
-
-
-            return (
-              constituency.showAs ===
-              selected
-            );
-
-          });
-
-        });
-
-      });
-
-  }
-
-
-  if (!filtered.length) {
-
-    list.innerHTML =
-      "<p>No TDs found for this constituency.</p>";
-
-    return;
-
-  }
-
-
-  list.innerHTML =
-    filtered.map(result => {
-
-      const member =
-        result.member || {};
-
-
-      const name =
-        member.fullName ||
-        (
-          (member.firstName || "") +
-          " " +
-          (member.lastName || "")
-        ).trim();
-
-
-      return `
-        <div class="td">
-
-          <div class="name">
-            ${escapeHtml(name || "Unknown TD")}
-          </div>
-
-          <div class="info">
-            TD • Dáil Éireann
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-
-}
-
-
-/* SAFETY */
-
-function escapeHtml(text) {
-
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-/* START */
-
-loadTDs();
-
-</script>
-
-</body>
-</html>
+       
