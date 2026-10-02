@@ -354,41 +354,21 @@ function ensureProfilePlacement(){
 }
 
 
-async function enrichMemberProfile(t){
- try{
-   const params=new URLSearchParams({
-     name:t.name,
-     memberCode:t.memberCode||""
-   });
-   const res=await fetch("/api/member_profile?"+params.toString());
-   const data=await res.json();
-   if(!data || !data.ok)return;
+function slugPart(value){
+ return String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[\'’]/g,"").replace(/[^A-Za-z0-9-]/g,"").toLowerCase();
+}
 
-   if(data.email)t.email=data.email;
-   if(data.photo)t.photo=data.photo;
-   if(data.profileUrl)t.profileUrl=data.profileUrl;
+function officialEmail(name){
+ const clean=String(name||"").replace(/\b(TD|Deputy)\b/gi,"").trim().replace(/\s+/g," ");
+ const parts=clean.split(" ").filter(Boolean);
+ if(parts.length<2)return"";
+ const first=slugPart(parts[0]);
+ const last=slugPart(parts[parts.length-1]);
+ return first&&last?`${first}.${last}@oireachtas.ie`:"";
+}
 
-   const profile=document.getElementById("profile");
-   if(!profile || profile.style.display==="none")return;
-
-   profile.innerHTML=profile.innerHTML
-     .replace(
-       /<div class="profile-photo-slot">[\s\S]*?<\/div>/,
-       memberPhotoMarkup(t,true)
-     )
-     .replace(
-       /<span class="profile-email-slot">[\s\S]*?<\/span>/,
-       t.email
-         ? `<a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a>`
-         : `<span class="muted">Not supplied</span>`
-     )
-     .replace(
-       /<span class="profile-link-slot">[\s\S]*?<\/span>/,
-       t.profileUrl
-         ? `<a href="${t.profileUrl}" target="_blank" style="color:#1769aa;text-decoration:none;font-weight:700">Official Oireachtas profile</a>`
-         : `<span class="muted">Not available</span>`
-     );
- }catch(e){}
+function officialMembersUrl(){
+ return "https://www.oireachtas.ie/en/members/";
 }
 
 function showProfile(index){
@@ -400,6 +380,8 @@ function showProfile(index){
  const profile=document.getElementById("profile");
  profile.style.display="block";
 
+ const email=t.email||officialEmail(t.name);
+ t.email=email;
  const recentVotes=votes.slice(0,20);
 
  profile.innerHTML=`
@@ -411,8 +393,8 @@ function showProfile(index){
    <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eef0f2">
      <h3>Member details</h3>
      <div class="profile-vote-row"><span>Constituency</span><strong>${t.constituency}</strong></div>
-     <div class="profile-vote-row"><span>Email</span><span class="profile-email-slot">${t.email ? `<a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a>` : `<span class="muted">Not supplied</span>`}</span></div>
-     <div class="profile-vote-row"><span>Official profile</span><span class="profile-link-slot">${t.profileUrl ? `<a href="${t.profileUrl}" target="_blank" style="color:#1769aa;text-decoration:none;font-weight:700">Official Oireachtas profile</a>` : `<span class="muted">Loading…</span>`}</span></div>
+     <div class="profile-vote-row"><span>Email</span><span>${email ? `<a href="mailto:${email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${email}</a>` : `<span class="muted">Not supplied</span>`}</span></div>
+     <div class="profile-vote-row"><span>Official profile</span><span><a href="${officialMembersUrl()}" target="_blank" style="color:#1769aa;text-decoration:none;font-weight:700">Find official Oireachtas profile</a></span></div>
      <div class="profile-vote-row"><span>Role</span><span>${t.role}</span></div>
    </div>
 
@@ -434,14 +416,13 @@ function showProfile(index){
    </div>
 
    <div class="profile-actions">
-     <a class="link" href="https://www.oireachtas.ie/en/members/" target="_blank">Official Oireachtas members</a>
+     <a class="link" href="${officialMembersUrl()}" target="_blank">Official Oireachtas members</a>
      <a class="link" href="https://www.oireachtas.ie/en/debates/votes/" target="_blank">Official Oireachtas votes</a>
      <button class="close" onclick="closeProfile()">Close profile</button>
    </div>
  `;
 
  profile.scrollIntoView({behavior:"auto",block:"start"});
- enrichMemberProfile(t);
 }
 
 function closeProfile(){
