@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+⁸<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -215,26 +215,23 @@ async function loadTDs() {
           membership.organization.
         */
 
-        const organization =
-          item.organization || {};
+        const represents =
+  item.represents || [];
 
+represents.forEach(rep => {
 
-        if (organization.showAs) {
+  const constituency =
+    rep.represent || {};
 
-          constituencies.add(
-            organization.showAs
-          );
+  if (constituency.showAs) {
 
-        }
+    constituencies.add(
+      constituency.showAs
+    );
 
+  }
 
-        if (organization.name) {
-
-          constituencies.add(
-            organization.name
-          );
-
-        }
+});
 
       });
 
