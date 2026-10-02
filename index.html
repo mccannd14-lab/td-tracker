@@ -103,10 +103,34 @@ function unwrapMember(x){
 
 function cleanDivision(x){
  const d=x.division||x;
- const title=d.debateSection?.showAs||d.divisionTitle||d.title||d.businessItem?.showAs||"Dáil division";
+
+ const subjectValue=
+   typeof d.subject==="string"
+   ? d.subject
+   : d.subject?.showAs ||
+     d.subject?.name ||
+     d.subject?.title ||
+     "";
+
+ const title=
+   subjectValue ||
+   d.debateSection?.showAs ||
+   d.divisionTitle ||
+   d.title ||
+   d.businessItem?.showAs ||
+   "Dáil division";
+
  const date=d.date||d.divisionDate||d.time||"";
  const result=d.result?.showAs||d.result||d.outcome||"";
- return{raw:d,title,date,result,members:d.members||[],tallies:d.tallies||{}};
+
+ return{
+   raw:d,
+   title,
+   date,
+   result,
+   members:d.members||[],
+   tallies:d.tallies||{}
+ };
 }
 
 function normaliseName(value){
