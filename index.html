@@ -1,13 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>TD Tracker</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial, sans-serif;
       background: #f4f6f8;
       color: #222;
     }
@@ -15,20 +21,50 @@
     header {
       background: #075985;
       color: white;
-      padding: 25px;
+      padding: 28px 20px;
       text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 34px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      font-size: 17px;
     }
 
     .box {
       background: white;
-      margin: 20px;
-      padding: 20px;
-      border-radius: 12px;
+      margin: 20px auto;
+      padding: 22px;
+      border-radius: 14px;
+      max-width: 850px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #075985;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px;
+      font-size: 17px;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      background: white;
     }
 
     .td {
-      padding: 15px 0;
+      padding: 16px 0;
       border-bottom: 1px solid #ddd;
+    }
+
+    .td:last-child {
+      border-bottom: none;
     }
 
     .name {
@@ -36,9 +72,29 @@
       font-weight: bold;
     }
 
+    .info {
+      margin-top: 4px;
+      color: #666;
+    }
+
+    .status {
+      color: #555;
+      margin-bottom: 15px;
+    }
+
     .error {
       color: #b00020;
       font-weight: bold;
+    }
+
+    .source {
+      font-size: 13px;
+      color: #666;
+      margin-top: 20px;
+    }
+
+    a {
+      color: #075985;
     }
   </style>
 </head>
@@ -50,11 +106,54 @@
   <p>How did your TD vote?</p>
 </header>
 
+
+<!-- CONSTITUENCY -->
+
 <div class="box">
-  <h2>Your TDs</h2>
-  <div id="status">Loading TD data...</div>
-  <div id="tds"></div>
+
+  <h2>Your constituency</h2>
+
+  <select id="constituency">
+    <option value="">Loading constituencies...</option>
+  </select>
+
 </div>
+
+
+<!-- TDs -->
+
+<div class="box">
+
+  <h2>Your TDs</h2>
+
+  <div id="status">
+    Loading TD data...
+  </div>
+
+  <div id="tds"></div>
+
+</div>
+
+
+<div class="box">
+
+  <h2>Recent Dáil votes</h2>
+
+  <p>
+    Vote information will be connected next.
+  </p>
+
+  <div class="source">
+    Data supplied from the
+    <a
+      href="https://www.oireachtas.ie/en/open-data/"
+      target="_blank">
+      Houses of the Oireachtas
+    </a>.
+  </div>
+
+</div>
+
 
 <script>
 
@@ -62,53 +161,168 @@ async function loadTDs() {
 
   const status = document.getElementById("status");
   const tds = document.getElementById("tds");
+  const constituency =
+    document.getElementById("constituency");
 
   try {
 
-    const response = await fetch("/api/members");
+    const response =
+      await fetch("/api/members");
 
     if (!response.ok) {
-      throw new Error("API returned HTTP " + response.status);
+      throw new Error(
+        "API returned HTTP " + response.status
+      );
     }
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
-    console.log(data);
-
-    const results = data.results || [];
+    const results =
+      data.results || [];
 
     if (results.length === 0) {
-      status.innerHTML = "API connected, but no TDs were returned.";
+
+      status.innerHTML =
+        "No TDs were returned.";
+
       return;
     }
 
-    status.innerHTML =
-      "API connected successfully. " + results.length + " TD records found.";
 
-    tds.innerHTML = results.slice(0, 20).map(item => {
+    /* --------------------------------
+       FIND CONSTITUENCIES
+    -------------------------------- */
 
-      const member = item.member || item;
+    const constituencies =
+      new Set();
 
-      const name =
-        member.fullName ||
-        ((member.firstName || "") + " " + (member.lastName || "")).trim() ||
-        "Unknown TD";
 
-      return `
-        <div class="td">
-          <div class="name">${escapeHtml(name)}</div>
-          <div>TD • Dáil Éireann</div>
-        </div>
-      `;
+    results.forEach(item => {
 
-    }).join("");
+      const member =
+        item.member || item;
+
+      const memberships =
+        member.memberships || [];
+
+
+      memberships.forEach(item => {
+
+        /*
+          Oireachtas data normally places
+          constituency information under
+          membership.organization.
+        */
+
+        const organization =
+          item.organization || {};
+
+
+        if (organization.showAs) {
+
+          constituencies.add(
+            organization.showAs
+          );
+
+        }
+
+
+        if (organization.name) {
+
+          constituencies.add(
+            organization.name
+          );
+
+        }
+
+      });
+
+    });
+
+
+    /* --------------------------------
+       BUILD DROPDOWN
+    -------------------------------- */
+
+    constituency.innerHTML = "";
+
+    const allOption =
+      document.createElement("option");
+
+    allOption.value = "";
+
+    allOption.textContent =
+      "All constituencies";
+
+    constituency.appendChild(
+      allOption
+    );
+
+
+    Array.from(constituencies)
+      .sort()
+      .forEach(name => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = name;
+
+        option.textContent = name;
+
+        constituency.appendChild(
+          option
+        );
+
+      });
+
+
+    /* --------------------------------
+       AUTOMATICALLY SELECT TIPPERARY
+    -------------------------------- */
+
+    const tipperary =
+      Array.from(constituencies)
+        .find(name =>
+          name.toLowerCase()
+            .includes("tipperary")
+        );
+
+
+    if (tipperary) {
+
+      constituency.value =
+        tipperary;
+
+    }
+
+
+    /* --------------------------------
+       SHOW TDs
+    -------------------------------- */
+
+    displayTDs(results);
+
+
+    /* --------------------------------
+       DROPDOWN CHANGE
+    -------------------------------- */
+
+    constituency.onchange = function() {
+
+      displayTDs(results);
+
+    };
+
 
   } catch (error) {
 
     console.error(error);
 
     status.innerHTML =
-      '<div class="error">ERROR: ' +
+      '<div class="error">' +
+      'ERROR: ' +
       escapeHtml(error.message) +
       '</div>';
 
@@ -116,16 +330,125 @@ async function loadTDs() {
 
 }
 
+
+/* --------------------------------
+   DISPLAY TDs
+-------------------------------- */
+
+function displayTDs(results) {
+
+  const tds =
+    document.getElementById("tds");
+
+  const constituency =
+    document.getElementById("constituency");
+
+  const selected =
+    constituency.value;
+
+
+  let filtered =
+    results;
+
+
+  if (selected) {
+
+    filtered =
+      results.filter(item => {
+
+        const member =
+          item.member || item;
+
+        const memberships =
+          member.memberships || [];
+
+
+        return memberships.some(item => {
+
+          const organization =
+            item.organization || {};
+
+
+          return (
+            organization.showAs === selected ||
+            organization.name === selected
+          );
+
+        });
+
+      });
+
+  }
+
+
+  if (filtered.length === 0) {
+
+    tds.innerHTML =
+      "<p>No TDs found for this constituency.</p>";
+
+    return;
+  }
+
+
+  tds.innerHTML =
+    filtered.map(item => {
+
+      const member =
+        item.member || item;
+
+
+      const name =
+        member.fullName ||
+        (
+          (member.firstName || "") +
+          " " +
+          (member.lastName || "")
+        ).trim();
+
+
+      return `
+        <div class="td">
+
+          <div class="name">
+            ${escapeHtml(name || "Unknown TD")}
+          </div>
+
+          <div class="info">
+            TD • Dáil Éireann
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+/* --------------------------------
+   SAFELY DISPLAY TEXT
+-------------------------------- */
+
 function escapeHtml(text) {
 
   return String(text)
+
     .replace(/&/g, "&amp;")
+
     .replace(/</g, "&lt;")
+
     .replace(/>/g, "&gt;")
+
     .replace(/"/g, "&quot;")
+
     .replace(/'/g, "&#039;");
 
 }
+
+
+/* --------------------------------
+   START
+-------------------------------- */
 
 loadTDs();
 
