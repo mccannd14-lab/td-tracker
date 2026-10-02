@@ -746,4 +746,171 @@ function displayVotes() {
 
 
   const recentVotes =
-    allVotes.slice(0, 20
+    allVotes.slice(0, 20);
+
+
+  container.innerHTML =
+    recentVotes.map(result => {
+
+      const division =
+        result.division ||
+        result;
+
+
+      const date =
+        division.date ||
+        "";
+
+
+      const subject =
+        getSubject(division);
+
+
+      const officialUrl =
+        division.uri ||
+        division.url ||
+        "";
+
+
+      const tdResults =
+        selectedMembers.map(
+          memberResult => {
+
+            const member =
+              memberResult.member ||
+              {};
+
+
+            const name =
+              member.fullName ||
+              (
+                (member.firstName || "") +
+                " " +
+                (member.lastName || "")
+              ).trim();
+
+
+            const vote =
+              getTDVote(
+                division,
+                member
+              );
+
+
+            return `
+              <div class="td-vote">
+
+                <div class="td-vote-name">
+                  ${escapeHtml(
+                    name || "Unknown TD"
+                  )}
+                </div>
+
+                <div class="vote-result">
+                  ${escapeHtml(vote)}
+                </div>
+
+              </div>
+            `;
+
+          }
+        ).join("");
+
+
+      return `
+        <div class="vote">
+
+          <div class="vote-date">
+            ${escapeHtml(
+              formatDate(date)
+            )}
+          </div>
+
+          <div class="vote-title">
+            ${escapeHtml(subject)}
+          </div>
+
+          ${tdResults}
+
+          ${
+            officialUrl
+              ? `
+                <a
+                  class="official"
+                  href="${escapeHtml(
+                    officialUrl
+                  )}"
+                  target="_blank">
+                  View official Oireachtas record
+                </a>
+              `
+              : ""
+          }
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+/* ==============================
+   DATE
+============================== */
+
+function formatDate(date) {
+
+  if (!date) {
+    return "";
+  }
+
+  try {
+
+    return new Date(date)
+      .toLocaleDateString(
+        "en-IE",
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+  } catch {
+
+    return date;
+
+  }
+
+}
+
+
+/* ==============================
+   HTML SAFETY
+============================== */
+
+function escapeHtml(text) {
+
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==============================
+   START
+============================== */
+
+loadTDs();
+
+loadVotes();
+
+</script>
+
+</body>
+</html>
