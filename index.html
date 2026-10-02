@@ -56,6 +56,7 @@
       border: 1px solid #bbb;
       border-radius: 8px;
       background: white;
+      margin-bottom: 10px;
     }
 
     .td {
@@ -87,9 +88,58 @@
       font-weight: bold;
     }
 
-    .vote-placeholder {
+    .vote {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 15px 0;
+      background: #fafafa;
+    }
+
+    .vote-date {
       color: #666;
-      line-height: 1.5;
+      font-size: 14px;
+      margin-bottom: 7px;
+    }
+
+    .vote-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      line-height: 1.35;
+    }
+
+    .td-vote {
+      padding: 12px;
+      margin: 8px 0;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .td-vote-name {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .vote-result {
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    .official {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 9px 12px;
+      background: #075985;
+      color: white;
+      text-decoration: none;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    .official:hover {
+      opacity: 0.9;
     }
 
     .source {
@@ -100,6 +150,19 @@
 
     a {
       color: #075985;
+    }
+
+    .loading {
+      color: #666;
+      padding: 10px 0;
+    }
+
+    .notice {
+      background: #eef6fb;
+      border-left: 4px solid #075985;
+      padding: 12px;
+      margin-bottom: 15px;
+      color: #444;
     }
   </style>
 </head>
@@ -112,6 +175,10 @@
 </header>
 
 
+<!-- ==============================
+     CONSTITUENCY
+============================== -->
+
 <div class="box">
 
   <h2>Your constituency</h2>
@@ -122,6 +189,10 @@
 
 </div>
 
+
+<!-- ==============================
+     TDs
+============================== -->
 
 <div class="box">
 
@@ -136,23 +207,22 @@
 </div>
 
 
+<!-- ==============================
+     VOTES
+============================== -->
+
 <div class="box">
 
   <h2>Recent Dáil votes</h2>
 
-  <div class="vote-placeholder">
-    <p>
-      The live Dáil voting records will appear here next.
-    </p>
-
-    <p>
-      Each vote will be linked to the official
-      Houses of the Oireachtas record.
-    </p>
+  <div id="voteStatus" class="loading">
+    Loading recent votes...
   </div>
 
+  <div id="votes"></div>
+
   <div class="source">
-    Data supplied from the
+    Voting data supplied from the
     <a
       href="https://www.oireachtas.ie/en/open-data/"
       target="_blank">
@@ -166,6 +236,7 @@
 <script>
 
 let allMembers = [];
+let allVotes = [];
 
 
 /* ==============================
@@ -199,8 +270,6 @@ function getMemberConstituencies(member) {
       membership.represents || [];
 
 
-    /* Make sure it is always an array */
-
     if (!Array.isArray(represents)) {
       represents = [represents];
     }
@@ -227,9 +296,7 @@ function getMemberConstituencies(member) {
         name &&
         !found.includes(name)
       ) {
-
         found.push(name);
-
       }
 
     });
@@ -263,7 +330,7 @@ async function loadTDs() {
     if (!response.ok) {
 
       throw new Error(
-        "API returned HTTP " +
+        "TD API returned HTTP " +
         response.status
       );
 
@@ -289,9 +356,7 @@ async function loadTDs() {
     }
 
 
-    /* ==========================
-       FIND ALL CONSTITUENCIES
-    ========================== */
+    /* FIND CONSTITUENCIES */
 
     const constituencySet =
       new Set();
@@ -316,9 +381,7 @@ async function loadTDs() {
     });
 
 
-    /* ==========================
-       BUILD DROPDOWN
-    ========================== */
+    /* BUILD DROPDOWN */
 
     select.innerHTML = "";
 
@@ -354,28 +417,21 @@ async function loadTDs() {
       });
 
 
-    /* ==========================
-       SHOW STATUS
-    ========================== */
-
     status.textContent =
       allMembers.length +
       " TD records found.";
 
 
-    /* ==========================
-       INITIAL DISPLAY
-    ========================== */
-
     displayTDs();
 
 
-    /* ==========================
-       DROPDOWN CHANGE
-    ========================== */
-
     select.onchange =
-      displayTDs;
+      function() {
+
+        displayTDs();
+        displayVotes();
+
+      };
 
 
   } catch (error) {
@@ -478,36 +534,4 @@ function displayTDs() {
           </div>
 
         </div>
-      `;
-
-    }).join("");
-
-}
-
-
-/* ==============================
-   HTML SAFETY
-============================== */
-
-function escapeHtml(text) {
-
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-}
-
-
-/* ==============================
-   START
-============================== */
-
-loadTDs();
-
-</script>
-
-</body>
-</html>
+      `
