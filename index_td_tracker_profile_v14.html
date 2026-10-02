@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TD Tracker Ireland</title>
+<style>
+:root{--navy:#102d46;--blue:#1769aa;--bg:#f4f6f8;--card:#fff;--muted:#667085;--border:#dfe4ea;--green:#157347;--red:#b42318}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:#17202a}
+header{background:linear-gradient(135deg,#102d46,#1769aa);color:#fff;padding:18px 18px 34px}
+.wrap{max-width:980px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center}.logo{font-weight:800;font-size:22px}.badge{font-size:12px;border:1px solid #ffffff55;padding:7px 10px;border-radius:99px}
+.hero{padding:45px 0 10px}.hero h1{font-size:42px;line-height:1.05;margin:0 0 12px}.hero p{font-size:18px;opacity:.9;max-width:650px}
+main{padding:24px 18px 60px}.bar{background:#fff;border:1px solid var(--border);padding:16px;border-radius:14px;margin-top:-42px;position:relative;box-shadow:0 8px 25px #00000010}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:7px}select,input{width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:#fff}
+.section{margin-top:27px}.section h2{margin:0 0 13px;font-size:22px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:17px}
+.td{cursor:pointer;transition:.15s}.td:hover{transform:translateY(-2px);box-shadow:0 5px 16px #0000000d}
+.initial{width:46px;height:46px;border-radius:50%;background:#e8f0f7;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);margin-bottom:12px}
+h3{margin:0 0 5px}.muted{color:var(--muted);font-size:14px}.pill{display:inline-block;margin-top:11px;padding:5px 9px;border-radius:99px;background:#eef2f6;font-size:12px}
+.search{margin-bottom:12px}.vote{padding:15px 0;border-bottom:1px solid var(--border)}.vote:last-child{border:0}.vhead{display:flex;justify-content:space-between;gap:12px}.date{font-size:13px;color:var(--muted)}.result{font-size:13px;color:var(--muted);margin-top:4px}.votes{margin-top:10px;display:none}.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:14px;border-top:1px solid #eef0f2}.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}.absent{color:var(--muted);font-weight:700}
+button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;font-size:13px}
+.close{background:#667085;margin-top:15px}.profile-votes{margin-top:18px}.profile-note{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
+.source{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
+footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-size:12px;line-height:1.5}
+@media(max-width:720px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:34px}.vhead{display:block}.vhead button{margin-top:9px}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+
+.td-photo{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin-bottom:12px;background:#e8f0f7}
+.profile-photo{width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;margin-bottom:14px;background:#e8f0f7}
+.profile-vote-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-top:1px solid #eef0f2;font-size:14px}
+.profile-vote-title{min-width:0;overflow-wrap:anywhere;line-height:1.4}
+.profile-vote-choice{flex:0 0 auto;white-space:nowrap;font-weight:700}
+.profile-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+@media(max-width:720px){
+ .profile-vote-row{font-size:14px}
+ .profile-vote-title{max-width:calc(100% - 58px)}
+ .profile-actions .link,.profile-actions .close{margin-top:0}
+}
+
+/* Structural layout reset */
+.section{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important}
+#tds{display:grid!important;width:100%!important;max-width:100%!important;min-width:0!important}
+#profile{
+ display:block!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ clear:both!important;
+ grid-column:1 / -1!important;
+ box-sizing:border-box!important;
+ overflow:hidden!important;
+}
+#profile[style*="display:none"]{display:none!important}
+#profile .profile-vote-row{
+ display:flex!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ box-sizing:border-box!important;
+}
+#profile .profile-vote-title{
+ flex:1 1 auto!important;
+ min-width:0!important;
+ overflow-wrap:anywhere!important;
+ word-break:normal!important;
+}
+#profile .profile-vote-choice{
+ flex:0 0 auto!important;
+ white-space:nowrap!important;
+}
+@media(max-width:720px){
+ #tds{grid-template-columns:1fr!important}
+ #profile{margin-left:0!important;margin-right:0!important;padding:16px!important}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="top"><div class="logo">TD Tracker</div><div class="badge">Prototype</div></div>
+<div class="hero"><h1>How did your TD vote?</h1><p>Find your representatives, explore recorded Dáil votes and follow the official parliamentary record.</p></div>
+</div></header>
+
+<main class="wrap">
+<div class="bar">
+<label for="constituency">Your constituency</label>
+<select id="constituency" onchange="changeConstituency(this.value)">
+<option value="all">All constituencies</option>
+</select>
+</div>
+
+<div id="apiStatus" style="margin-top:14px">Connecting to the official Oireachtas data…</div>
+
+<div class="section">
+<h2>Your TDs</h2>
+<div id="tds" class="grid"></div>
+<div id="profile" class="profile-container" style="display:none;margin-top:20px;background:#fff;border:1px solid #dfe4ea;border-radius:14px;padding:20px"></div>
+</div>
+
+<div class="section">
+<h2>Recent votes</h2>
+<input id="search" class="search" placeholder="Search Bills or votes..." oninput="renderVotes()">
+<div id="votes" class="card"></div>
+</div>
+
+<div class="source"><strong>Data note:</strong> TDs and recorded votes are loaded from the official Houses of the Oireachtas open-data feed. Individual member votes are only displayed when present in the official division record.</div>
+</main>
+
+<footer>TD Tracker is an independent civic-information prototype. It does not rate, recommend or endorse candidates or parties.</footer>
+
+<script>
+let tds=[];
+let votes=[];
+let apiStatus="Connecting to the official Oireachtas data…";
+const API="/api";
+
+function unwrapMember(x){
+ const m=x.member||x;
+ const memberships=Array.isArray(m.memberships)?m.memberships:[];
+ let active={};
+ for(let i=memberships.length-1;i>=0;i--){
+   const item=memberships[i]?.membership||memberships[i];
+   if(item){active=item;break;}
+ }
+ let party="Independent / not listed";
+ try{
+   const parties=active.parties||[];
+   if(parties.length){
+     const p=parties[parties.length-1];
+     party=p.party?.showAs||p.showAs||party;
+   }
+ }catch(e){}
+ let constituencies=[];
+ try{
+   let represents=active.represents||[];
+   if(!Array.isArray(represents)) represents=[represents];
+   represents.forEach(rep=>{
+     const name=rep?.represent?.showAs||rep?.represent?.name||"";
+     if(name&&!constituencies.includes(name)) constituencies.push(name);
+   });
+ }catch(e){}
+ return{
+   name:m.fullName||m.showAs||"Unknown member",
+   party,
+   constituency:constituencies[0]||"Constituency not listed",
+   constituencies,
+   memberCode:m.memberCode||m.id||"",
+   email:m.email||m.contactDetails?.email||m.contact?.email||"",
+   photo:
+     m.image?.uri||m.image?.url||m.image?.href||
+     m.photo?.uri||m.photo?.url||m.photo?.href||
+     m.imageUrl||m.photoUrl||m.profileImage||m.profilePhoto||"",
+   role:"TD"
+ };
+}
+
+function cleanDivision(x){
+ const d=x.division||x;
+
+ const subjectValue=
+   typeof d.subject==="string"
+   ? d.subject
+   : d.subject?.showAs ||
+     d.subject?.name ||
+     d.subject?.title ||
+     "";
+
+ let title=
+   subjectValue ||
+   d.debateSection?.showAs ||
+   d.divisionTitle ||
+   d.title ||
+   d.businessItem?.showAs ||
+   "Dáil division";
+
+ /* Clean awkward punctuation in the official subject text */
+ title=String(title)
+   .replace(/\s+/g," ")
+   .trim()
+   .replace(/^Question put\s*:\s*[:.]?\s*/i,"Question put — ")
+   .replace(/^Amendment put\s*:\s*[:.]?\s*/i,"Amendment put");
+
+ if(/^Question put\s*[—-]?\s*$/i.test(title)){
+   title="Question put";
+ }
+
+ const date=d.date||d.divisionDate||d.time||"";
+ const result=d.result?.showAs||d.result||d.outcome||"";
+
+ return{
+   raw:d,
+   title,
+   date,
+   result,
+   members:d.members||[],
+   tallies:d.tallies||{}
+ };
+}
+
+function normaliseName(value){
+ return String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+}
+
+function getMemberCode(member){
+ if(!member)return"";
+ return String(member.memberCode||member.code||member.member_id||member.id||member.member?.memberCode||"").toLowerCase();
+}
+
+function getMemberName(member){
+ if(!member)return"";
+ return member.fullName||member.showAs||member.name||((member.firstName||"")+" "+(member.lastName||"")).trim();
+}
+
+function sameTD(voteMember,selectedMember){
+ if(!voteMember||!selectedMember)return false;
+ const vm=voteMember.member||voteMember;
+ const voteCode=getMemberCode(vm);
+ const selectedCode=getMemberCode(selectedMember);
+ if(voteCode&&selectedCode&&voteCode===selectedCode)return true;
+ const voteName=normaliseName(getMemberName(vm));
+ const selectedName=normaliseName(getMemberName(selectedMember));
+ if(voteName&&selectedName&&voteName===selectedName)return true;
+ return false;
+}
+
+function searchVoteData(data,selectedMember){
+ if(!data)return null;
+ if(Array.isArray(data)){
+   for(const item of data){
+     const found=searchVoteData(item,selectedMember);
+     if(found)return found;
+   }
+   return null;
+ }
+ if(typeof data==="object"){
+   if(data.members){
+     let members=data.members;
+     if(!Array.isArray(members))members=Object.values(members);
+     for(const voteMember of members){
+       if(sameTD(voteMember,selectedMember)){
+         return data.showAs||data.name||data.label||data.vote||data.category||"Recorded";
+       }
+     }
+   }
+   for(const key of Object.keys(data)){
+     const found=searchVoteData(data[key],selectedMember);
+     if(found)return found;
+   }
+ }
+ return null;
+}
+
+function memberVoteFor(division,member){
+ if(!division||!member)return"Not recorded";
+ const tallyResult=searchVoteData(division.tallies,member);
+ if(tallyResult)return tallyResult;
+ const directResult=searchVoteData(division.members,member);
+ if(directResult)return directResult;
+ return"Not recorded";
+}
+
+async function loadLiveData(){
+ try{
+   const [memberResponse,voteResponse]=await Promise.all([
+     fetch(`${API}/members?skip=0&limit=500`),
+     fetch(`${API}/votes?skip=0&limit=50&date_start=2025-01-01&date_end=2026-10-01`)
+   ]);
+   if(!memberResponse.ok||!voteResponse.ok)throw new Error("API request failed");
+   const memberData=await memberResponse.json();
+   const voteData=await voteResponse.json();
+   tds=(memberData.results||[]).map(unwrapMember);
+   votes=(voteData.results||[]).map(cleanDivision).filter(v=>v.title).slice(0,50);
+   buildConstituencyList();
+   apiStatus=`Live Oireachtas data connected · ${tds.length} Dáil members · ${votes.length} recent divisions`;
+ }catch(e){
+   console.error(e);
+   apiStatus="Live Oireachtas data could not be loaded.";
+ }
+ renderAllLive();
+}
+
+function buildConstituencyList(){
+ const select=document.getElementById("constituency");
+ const names=new Set();
+ tds.forEach(td=>{
+   const list=Array.isArray(td.constituencies)?td.constituencies:[];
+   list.forEach(name=>{if(name)names.add(name);});
+ });
+ const sorted=Array.from(names).sort((a,b)=>a.localeCompare(b,"en"));
+ select.innerHTML=`<option value="all">All constituencies</option>`;
+ sorted.forEach(name=>{
+   const option=document.createElement("option");
+   option.value=name;
+   option.textContent=name;
+   select.appendChild(option);
+ });
+}
+
+function getDisplayedTDs(){
+ const selected=document.getElementById("constituency").value;
+ if(selected==="all")return tds;
+ return tds.filter(td=>(td.constituencies||[]).includes(selected));
+}
+
+function initials(name){
+ return String(name||"").split(" ").map(x=>x.replace(/[^A-Za-zÁÉÍÓÚáéíóú]/g,"")[0]).filter(Boolean).slice(0,2).join("");
+}
+
+
+function safePhotoUrl(url){
+ const s=String(url||"").trim();
+ return /^https?:\/\//i.test(s) ? s : "";
+}
+
+function memberPhotoMarkup(t,profile=false){
+ const photo=safePhotoUrl(t.photo);
+ if(photo){
+   const cls=profile?"profile-photo":"td-photo";
+   return `<img class="${cls}" src="${photo}" alt="${t.name} TD" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none${profile?";width:96px;height:96px;font-size:24px":""}">${initials(t.name)}</div>`;
+ }
+ if(profile){
+   return `<div class="initial" style="width:96px;height:96px;font-size:24px">${initials(t.name)}</div>`;
+ }
+ return `<div class="initial">${initials(t.name)}</div>`;
+}
+
+/* TD CARDS + PROFILE */
+function renderTDs(){
+ ensureProfilePlacement();
+ const list=getDisplayedTDs();
+ document.getElementById("tds").innerHTML=
+ list.map((t,i)=>`
+   <div class="card td" onclick="showProfile(${i})">
+     ${memberPhotoMarkup(t)}
+     <h3>${t.name} TD</h3>
+     <div class="muted">${t.party}</div>
+     <span class="pill">${t.constituency}</span>
+   </div>
+ `).join("")||
+ "<div class='muted'>No TDs found for this constituency.</div>";
+}
+
+
+function ensureProfilePlacement(){
+ const profile=document.getElementById("profile");
+ const tds=document.getElementById("tds");
+ if(!profile || !tds)return;
+ const section=tds.parentElement;
+ if(section && profile.parentElement!==section){
+   section.appendChild(profile);
+ }
+ if(profile.parentElement===tds){
+   section.appendChild(profile);
+ }
+}
+
+
+async function enrichMemberProfile(t){
+ try{
+   const params=new URLSearchParams({
+     name:t.name,
+     memberCode:t.memberCode||""
+   });
+   const res=await fetch("/api/member_profile?"+params.toString());
+   const data=await res.json();
+   if(!data || !data.ok)return;
+
+   if(data.email)t.email=data.email;
+   if(data.photo)t.photo=data.photo;
+   if(data.profileUrl)t.profileUrl=data.profileUrl;
+
+   const profile=document.getElementById("profile");
+   if(!profile || profile.style.display==="none")return;
+
+   profile.innerHTML=profile.innerHTML
+     .replace(
+       /<div class="profile-photo-slot">[\s\S]*?<\/div>/,
+       memberPhotoMarkup(t,true)
+     )
+     .replace(
+       /<span class="profile-email-slot">[\s\S]*?<\/span>/,
+       t.email
+         ? `<a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a>`
+         : `<span class="muted">Not supplied</span>`
+     )
+     .replace(
+       /<span class="profile-link-slot">[\s\S]*?<\/span>/,
+       t.profileUrl
+         ? `<a href="${t.profileUrl}" target="_blank" style="color:#1769aa;text-decoration:none;font-weight:700">Official Oireachtas profile</a>`
+         : `<span class="muted">Not available</span>`
+     );
+ }catch(e){}
+}
+
+function showProfile(index){
+ ensureProfilePlacement();
+ const list=getDisplayedTDs();
+ const t=list[index];
+ if(!t)return;
+
+ const profile=document.getElementById("profile");
+ profile.style.display="block";
+
+ const recentVotes=votes.slice(0,20);
+
+ profile.innerHTML=`
+   <div class="profile-photo-slot">${memberPhotoMarkup(t,true)}</div>
+   <h2 style="margin:0 0 6px">${t.name} TD</h2>
+   <div class="muted">${t.party}</div>
+   <span class="pill">${t.constituency}</span>
+
+   <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eef0f2">
+     <h3>Member details</h3>
+     <div class="profile-vote-row"><span>Constituency</span><strong>${t.constituency}</strong></div>
+     <div class="profile-vote-row"><span>Email</span><span class="profile-email-slot">${t.email ? `<a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a>` : `<span class="muted">Not supplied</span>`}</span></div>
+     <div class="profile-vote-row"><span>Official profile</span><span class="profile-link-slot">${t.profileUrl ? `<a href="${t.profileUrl}" target="_blank" style="color:#1769aa;text-decoration:none;font-weight:700">Official Oireachtas profile</a>` : `<span class="muted">Loading…</span>`}</span></div>
+     <div class="profile-vote-row"><span>Role</span><span>${t.role}</span></div>
+   </div>
+
+   <div class="profile-votes">
+     <h3>Recent recorded votes</h3>
+     ${recentVotes.length ? recentVotes.map(v=>{
+       const mv=memberVoteFor(v,t);
+       let cls="";
+       if(mv==="Tá")cls="yes";
+       if(mv==="Níl")cls="no";
+       if(mv==="Absent"||mv==="Abstained")cls="absent";
+       return `<div class="profile-vote-row"><span class="profile-vote-title">${v.title}<span class="date" style="display:block;margin-top:3px">${v.date||""}</span></span><span class="profile-vote-choice ${cls}">${mv}</span></div>`;
+     }).join("") : "<div class='muted'>No recent votes available.</div>"}
+   </div>
+
+   <div class="profile-note">
+     <strong>About the record:</strong>
+     This profile shows recorded votes found in the official Houses of the Oireachtas division data. A vote is shown as “Not recorded” when an individual vote is not present in the official division record.
+   </div>
+
+   <div class="profile-actions">
+     <a class="link" href="https://www.oireachtas.ie/en/members/" target="_blank">Official Oireachtas members</a>
+     <a class="link" href="https://www.oireachtas.ie/en/debates/votes/" target="_blank">Official Oireachtas votes</a>
+     <button class="close" onclick="closeProfile()">Close profile</button>
+   </div>
+ `;
+
+ profile.scrollIntoView({behavior:"auto",block:"start"});
+ enrichMemberProfile(t);
+}
+
+function closeProfile(){
+ const profile=document.getElementById("profile");
+ profile.style.display="none";
+ profile.innerHTML="";
+}
+
+function renderVotes(){
+ const searchBox=document.getElementById("search");
+ const q=(searchBox?.value||"").toLowerCase();
+ const filtered=votes.filter(v=>(v.title+" "+v.date).toLowerCase().includes(q));
+ const displayedTDs=getDisplayedTDs();
+
+ document.getElementById("votes").innerHTML=
+ filtered.map((v,i)=>`
+   <div class="vote">
+     <div class="vhead">
+       <div>
+         <strong>${v.title}</strong>
+         <div class="date">${v.date||"Date not supplied"}</div>
+         <div class="result">${v.result?"Result: "+v.result:"Official division record"}</div>
+       </div>
+       <button onclick="toggleVote(${i})">View TD votes</button>
+     </div>
+     <div id="vote${i}" class="votes">
+       ${displayedTDs.map(t=>{
+         const mv=memberVoteFor(v,t);
+         let cls="";
+         if(mv==="Tá")cls="yes";
+         if(mv==="Níl")cls="no";
+         if(mv==="Absent"||mv==="Abstained")cls="absent";
+         return `<div class="row"><span>${t.name}</span><span class="${cls}">${mv}</span></div>`;
+       }).join("")}
+       <div class="source">
+         <strong>Official source:</strong>
+         This division is loaded from the Houses of the Oireachtas data feed.
+         Individual member votes are displayed only when present in the official division record.
+       </div>
+       <a class="link" href="https://www.oireachtas.ie/en/debates/votes/" target="_blank">Open official Oireachtas votes</a>
+     </div>
+   </div>
+ `).join("")||"<div class='muted'>No matching live divisions.</div>";
+}
+
+function toggleVote(i){
+ const e=document.getElementById("vote"+i);
+ e.style.display=e.style.display==="block"?"none":"block";
+}
+
+function changeConstituency(){
+ closeProfile();
+ renderTDs();
+ renderVotes();
+}
+
+function renderAllLive(){
+ renderTDs();
+ renderVotes();
+ const e=document.getElementById("apiStatus");
+ if(e)e.textContent=apiStatus;
+}
+
+renderTDs();
+renderVotes();
+loadLiveData();
+</script>
+</body>
+</html>
