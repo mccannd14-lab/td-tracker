@@ -165,31 +165,37 @@ function unwrapMember(x){
 function cleanDivision(x){
  const d=x.division||x;
 
- const subjectValue=
-   typeof d.subject==="string"
-   ? d.subject
-   : d.subject?.showAs ||
-     d.subject?.name ||
-     d.subject?.title ||
-     "";
+ const pickText=(value)=>{
+   if(typeof value==='string') return value;
+   if(!value) return "";
+   return value.showAs || value.name || value.title || value.text || value.description || "";
+ };
+
+ /* Put the actual subject of the vote first.  The official feed often
+    uses "Amendment put" or "Question put" as the generic subject while
+    voteNote contains what the Dáil was actually voting on. */
+ const voteNote=pickText(d.voteNote);
+ const subjectValue=pickText(d.subject);
+ const businessItem=pickText(d.businessItem);
+ const debateSection=pickText(d.debateSection);
 
  let title=
+   voteNote ||
    subjectValue ||
-   d.debateSection?.showAs ||
+   businessItem ||
+   debateSection ||
    d.divisionTitle ||
    d.title ||
-   d.businessItem?.showAs ||
    "Dáil division";
 
- /* Clean awkward punctuation in the official subject text */
  title=String(title)
    .replace(/\s+/g," ")
    .trim()
-   .replace(/^Question put\s*:\s*[:.]?\s*/i,"Question put — ")
-   .replace(/^Amendment put\s*:\s*[:.]?\s*/i,"Amendment put");
+   .replace(/^Question put\s*:\s*[:.]?\s*/i,"")
+   .replace(/^Amendment put\s*:\s*[:.]?\s*/i,"");
 
- if(/^Question put\s*[—-]?\s*$/i.test(title)){
-   title="Question put";
+ if(!title || /^(question|amendment) put$/i.test(title)){
+   title=subjectValue || "Dáil division";
  }
 
  const date=d.date||d.divisionDate||d.time||"";
