@@ -353,6 +353,44 @@ function ensureProfilePlacement(){
  }
 }
 
+
+async function enrichMemberProfile(t){
+ try{
+   const params=new URLSearchParams({
+     name:t.name,
+     memberCode:t.memberCode||""
+   });
+   const res=await fetch("/api/member_profile?"+params.toString());
+   const data=await res.json();
+   if(!data || !data.ok)return;
+
+   if(data.email)t.email=data.email;
+   if(data.photo)t.photo=data.photo;
+   if(data.profileUrl)t.profileUrl=data.profileUrl;
+
+   const profile=document.getElementById("profile");
+   if(!profile || profile.style.display==="none")return;
+
+   profile.innerHTML=profile.innerHTML
+     .replace(
+       /<div class="profile-photo-slot">[\s\S]*?<\/div>/,
+       memberPhotoMarkup(t,true)
+     )
+     .replace(
+       /<span class="profile-email-slot">[\s\S]*?<\/span>/,
+       t.email
+         ? `<a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a>`
+         : `<span class="muted">Not supplied</span>`
+     )
+     .replace(
+       /<span class="profile-link-slot">[\s\S]*?<\/span>/,
+       t.profileUrl
+         ? `<a href="${t.profileUrl}" target="_blank" style="color:#1769aa;text-decoration:none;font-weight:700">Official Oireachtas profile</a>`
+         : `<span class="muted">Not available</span>`
+     );
+ }catch(e){}
+}
+
 function showProfile(index){
  ensureProfilePlacement();
  const list=getDisplayedTDs();
@@ -365,7 +403,7 @@ function showProfile(index){
  const recentVotes=votes.slice(0,20);
 
  profile.innerHTML=`
-   ${memberPhotoMarkup(t,true)}
+   <div class="profile-photo-slot">${memberPhotoMarkup(t,true)}</div>
    <h2 style="margin:0 0 6px">${t.name} TD</h2>
    <div class="muted">${t.party}</div>
    <span class="pill">${t.constituency}</span>
@@ -373,7 +411,8 @@ function showProfile(index){
    <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eef0f2">
      <h3>Member details</h3>
      <div class="profile-vote-row"><span>Constituency</span><strong>${t.constituency}</strong></div>
-     ${t.email ? `<div class="profile-vote-row"><span>Email</span><a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a></div>` : `<div class="profile-vote-row"><span>Email</span><span class="muted">Not supplied</span></div>`}
+     <div class="profile-vote-row"><span>Email</span><span class="profile-email-slot">${t.email ? `<a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a>` : `<span class="muted">Not supplied</span>`}</span></div>
+     <div class="profile-vote-row"><span>Official profile</span><span class="profile-link-slot">${t.profileUrl ? `<a href="${t.profileUrl}" target="_blank" style="color:#1769aa;text-decoration:none;font-weight:700">Official Oireachtas profile</a>` : `<span class="muted">Loading…</span>`}</span></div>
      <div class="profile-vote-row"><span>Role</span><span>${t.role}</span></div>
    </div>
 
@@ -402,6 +441,7 @@ function showProfile(index){
  `;
 
  profile.scrollIntoView({behavior:"auto",block:"start"});
+ enrichMemberProfile(t);
 }
 
 function closeProfile(){
