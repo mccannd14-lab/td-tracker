@@ -248,6 +248,13 @@ function showProfile(index){
    <div class="muted">${t.party}</div>
    <span class="pill">${t.constituency}</span>
 
+   <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eef0f2">
+     <h3>Member details</h3>
+     <div class="row"><span>Constituency</span><strong>${t.constituency}</strong></div>
+     ${t.email ? `<div class="row"><span>Email</span><a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700">${t.email}</a></div>` : `<div class="row"><span>Email</span><span class="muted">Not supplied</span></div>`}
+     <div class="row"><span>Role</span><span>${t.role}</span></div>
+   </div>
+
    <div class="profile-votes">
      <h3>Recent recorded votes</h3>
      ${recentVotes.length ? recentVotes.map(v=>{
