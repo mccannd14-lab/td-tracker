@@ -45,6 +45,30 @@ footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-s
  #profile .profile-votes>div>div{max-width:100%!important}
  #profile .profile-votes a.link{max-width:100%;white-space:normal}
 }
+
+/* FINAL MOBILE LAYOUT SAFETY */
+@media (max-width: 800px){
+  .wrap, main, .section, #tds, #profile, #votes {width:100%;max-width:100%;min-width:0}
+  .grid{display:grid!important;grid-template-columns:1fr!important;width:100%!important}
+  .td,.card{width:100%!important;min-width:0!important;max-width:100%!important}
+  #profile{display:none;width:100%!important;max-width:100%!important;min-width:0!important;
+           margin:20px 0 0!important;padding:18px!important;overflow:hidden!important}
+  #profile *{max-width:100%;min-width:0}
+  #profile .profile-votes>div{width:100%!important;min-width:0!important}
+  #profile .profile-votes .row{
+    display:flex!important;flex-wrap:nowrap!important;
+    width:100%!important;min-width:0!important;
+  }
+  #profile .profile-votes .row>span:first-child{
+    flex:1 1 auto!important;min-width:0!important;
+    overflow-wrap:anywhere!important;word-break:normal!important;
+  }
+  #profile .profile-votes .row>span:last-child{flex:0 0 auto!important}
+  #profile .profile-photo{width:90px!important;height:90px!important}
+  #profile .initial{width:90px!important;height:90px!important}
+  .source{width:100%!important;max-width:100%!important;overflow-wrap:anywhere!important}
+  .link,button{max-width:100%!important;white-space:normal!important}
+}
 </style>
 </head>
 <body>
@@ -314,9 +338,9 @@ function renderTDs(){
  const list=getDisplayedTDs();
  document.getElementById("tds").innerHTML=
  list.map((t,i)=>`
-   <div class="card td" onclick="showProfile(${i})">
+   <div class="card td" style="display:block;width:100%;min-width:0" onclick="showProfile(${i})">
      ${memberPhotoMarkup(t)}
-     <h3>${t.name} TD</h3>
+     <h3 style="overflow-wrap:anywhere">${t.name} TD</h3>
      <div class="muted">${t.party}</div>
      <span class="pill">${t.constituency}</span>
    </div>
@@ -379,7 +403,7 @@ function showProfile(index){
    <button class="close" onclick="closeProfile()">Close profile</button>
  `;
 
- profile.scrollIntoView({behavior:"auto",block:"start"});
+ window.scrollTo({top:profile.offsetTop,left:0,behavior:"auto"});
 }
 
 function closeProfile(){
