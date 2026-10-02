@@ -311,17 +311,71 @@ function safePhotoUrl(url){
  return /^https?:\/\//i.test(s) ? s : "";
 }
 
-function memberPhotoMarkup(t,profile=false){
- const photo=safePhotoUrl(t.photo);
- if(photo){
-   const cls=profile?"profile-photo":"td-photo";
-   return `<img class="${cls}" src="${photo}" alt="${t.name} TD" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none${profile?";width:96px;height:96px;font-size:24px":""}">${initials(t.name)}</div>`;
- }
- if(profile){
-   return `<div class="initial" style="width:96px;height:96px;font-size:24px">${initials(t.name)}</div>`;
- }
- return `<div class="initial">${initials(t.name)}</div>`;
+
+const photoCache = new Map();
+
+async function lookupPublicPortrait(name){
+  const key=normaliseName(name);
+  if(photoCache.has(key)) return photoCache.get(key);
+
+  try{
+    const params=new URLSearchParams({
+      action:"query",
+      generator:"search",
+      gsrsearch:`"${name}"`,
+      gsrnamespace:"6",
+      gsrlimit:"5",
+      prop:"imageinfo",
+      iiprop:"url",
+      iiurlwidth:"300",
+      format:"json",
+      origin:"*"
+    });
+
+    const r=await fetch("https://commons.wikimedia.org/w/api.php?"+params.toString());
+    if(!r.ok) throw new Error("portrait lookup failed");
+    const data=await r.json();
+
+    const pages=Object.values(data.query?.pages||{});
+    const wanted=normaliseName(name);
+
+    // Only accept a result whose file title contains the member's full name.
+    const match=pages.find(p=>{
+      const title=normaliseName(String(p.title||"").replace(/^File:/i,""));
+      return title.includes(wanted);
+    });
+
+    const url=match?.imageinfo?.[0]?.thumburl||match?.imageinfo?.[0]?.url||"";
+    const safe=safePhotoUrl(url);
+    photoCache.set(key,safe);
+    return safe;
+  }catch(e){
+    photoCache.set(key,"");
+    return "";
+  }
 }
+
+async function loadPortraitInto(element,name,profile=false){
+  const url=await lookupPublicPortrait(name);
+  if(!url||!element)return;
+
+  const cls=profile?"profile-photo":"td-photo";
+  const initialsHtml=`<div class="initial" style="${profile?"width:96px;height:96px;font-size:24px":""}">${initials(name)}</div>`;
+  element.innerHTML=`<img class="${cls}" src="${url}" alt="${name} TD portrait" loading="lazy" onerror="this.parentElement.innerHTML=${JSON.stringify(initialsHtml)}">`;
+}
+
+function memberPhotoMarkup(t,profile=false){
+  const photo=safePhotoUrl(t.photo);
+  if(photo){
+    const cls=profile?"profile-photo":"td-photo";
+    return `<img class="${cls}" src="${photo}" alt="${t.name} TD" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none${profile?";width:96px;height:96px;font-size:24px":""}">${initials(t.name)}</div>`;
+  }
+  if(profile){
+    return `<div class="initial photo-placeholder" style="width:96px;height:96px;font-size:24px">${initials(t.name)}</div>`;
+  }
+  return `<div class="initial photo-placeholder">${initials(t.name)}</div>`;
+}
+
 
 /* TD CARDS + PROFILE */
 function renderTDs(){
@@ -330,13 +384,21 @@ function renderTDs(){
  document.getElementById("tds").innerHTML=
  list.map((t,i)=>`
    <div class="card td" onclick="showProfile(${i})">
-     ${memberPhotoMarkup(t)}
+     <div class="photo-slot" data-photo-name="${encodeURIComponent(t.name)}">${memberPhotoMarkup(t)}</div>
      <h3>${t.name} TD</h3>
      <div class="muted">${t.party}</div>
      <span class="pill">${t.constituency}</span>
    </div>
  `).join("")||
  "<div class='muted'>No TDs found for this constituency.</div>";
+
+ document.querySelectorAll(".photo-slot[data-photo-name]").forEach(slot=>{
+   const name=decodeURIComponent(slot.dataset.photoName||"");
+   lookupPublicPortrait(name).then(url=>{
+     if(!url||!slot.isConnected)return;
+     slot.innerHTML=`<img class="td-photo" src="${url}" alt="${name} TD portrait" loading="lazy" onerror="this.style.display='none'">`;
+   });
+ });
 }
 
 
@@ -385,7 +447,7 @@ function showProfile(index){
  const recentVotes=votes.slice(0,20);
 
  profile.innerHTML=`
-   <div class="profile-photo-slot">${memberPhotoMarkup(t,true)}</div>
+   <div class="profile-photo-slot" id="profilePhotoSlot">${memberPhotoMarkup(t,true)}</div>
    <h2 style="margin:0 0 6px">${t.name} TD</h2>
    <div class="muted">${t.party}</div>
    <span class="pill">${t.constituency}</span>
@@ -421,6 +483,15 @@ function showProfile(index){
      <button class="close" onclick="closeProfile()">Close profile</button>
    </div>
  `;
+
+ const profilePhotoSlot=document.getElementById("profilePhotoSlot");
+ if(profilePhotoSlot && !t.photo){
+   lookupPublicPortrait(t.name).then(url=>{
+     if(url && profilePhotoSlot.isConnected){
+       profilePhotoSlot.innerHTML=`<img class="profile-photo" src="${url}" alt="${t.name} TD portrait">`;
+     }
+   });
+ }
 
  profile.scrollIntoView({behavior:"auto",block:"start"});
 }
