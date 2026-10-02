@@ -11,171 +11,30 @@ body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:#172
 header{background:linear-gradient(135deg,#102d46,#1769aa);color:#fff;padding:18px 18px 34px}
 .wrap{max-width:980px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center}.logo{font-weight:800;font-size:22px}.badge{font-size:12px;border:1px solid #ffffff55;padding:7px 10px;border-radius:99px}
 .hero{padding:45px 0 10px}.hero h1{font-size:42px;line-height:1.05;margin:0 0 12px}.hero p{font-size:18px;opacity:.9;max-width:650px}
-html,body{overflow-x:hidden}main{padding:24px 18px 60px;min-width:0}.bar{background:#fff;border:1px solid var(--border);padding:16px;border-radius:14px;margin-top:-42px;position:relative;box-shadow:0 8px 25px #00000010}
+main{padding:24px 18px 60px}.bar{background:#fff;border:1px solid var(--border);padding:16px;border-radius:14px;margin-top:-42px;position:relative;box-shadow:0 8px 25px #00000010}
 label{font-size:13px;color:var(--muted);display:block;margin-bottom:7px}select,input{width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:#fff}
 .section{margin-top:27px}.section h2{margin:0 0 13px;font-size:22px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:17px}
 .td{cursor:pointer;transition:.15s}.td:hover{transform:translateY(-2px);box-shadow:0 5px 16px #0000000d}
-.initial{width:46px;height:46px;border-radius:50%;background:#e8f0f7;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);margin-bottom:12px}.td-photo{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin-bottom:12px;background:#e8f0f7}.profile-photo{width:110px;height:110px;border-radius:50%;object-fit:cover;display:block;margin:0 0 14px;background:#e8f0f7}
+.initial{width:46px;height:46px;border-radius:50%;background:#e8f0f7;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy);margin-bottom:12px}
 h3{margin:0 0 5px}.muted{color:var(--muted);font-size:14px}.pill{display:inline-block;margin-top:11px;padding:5px 9px;border-radius:99px;background:#eef2f6;font-size:12px}
-.search{margin-bottom:12px}.vote{padding:15px 0;border-bottom:1px solid var(--border);min-width:0}.vote>*{min-width:0}.vote:last-child{border:0}.vhead{display:flex;justify-content:space-between;gap:12px}.date{font-size:13px;color:var(--muted)}.result{font-size:13px;color:var(--muted);margin-top:4px}.votes{margin-top:10px;display:none}.row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px 12px;padding:7px 0;font-size:14px;border-top:1px solid #eef0f2}.row>span:first-child,.row>a:first-child{min-width:0;overflow-wrap:anywhere;word-break:break-word}.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}.absent{color:var(--muted);font-weight:700}
-button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;font-size:13px;display:inline-block;max-width:100%;white-space:normal;text-align:center;line-height:1.25}
+.search{margin-bottom:12px}.vote{padding:15px 0;border-bottom:1px solid var(--border)}.vote:last-child{border:0}.vhead{display:flex;justify-content:space-between;gap:12px}.date{font-size:13px;color:var(--muted)}.result{font-size:13px;color:var(--muted);margin-top:4px}.votes{margin-top:10px;display:none}.row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:14px;border-top:1px solid #eef0f2}.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}.absent{color:var(--muted);font-weight:700}
+button,.link{border:0;background:var(--blue);color:#fff;padding:9px 12px;border-radius:8px;font-weight:700;cursor:pointer;text-decoration:none;font-size:13px}
 .close{background:#667085;margin-top:15px}.profile-votes{margin-top:18px}.profile-note{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
 .source{background:#f8fafc;padding:13px;border-radius:10px;margin-top:14px;font-size:13px;line-height:1.5}
 footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-size:12px;line-height:1.5}
 @media(max-width:720px){.grid{grid-template-columns:1fr 1fr}.hero h1{font-size:34px}.vhead{display:block}.vhead button{margin-top:9px}}
-@media(max-width:480px){
- .grid{grid-template-columns:1fr}
- .card{padding:14px}
- .profile-photo{width:84px;height:84px}
- .profile-votes>div{padding:14px 0!important}
- .profile-votes .row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}
- .profile-votes .row>span:first-child{font-size:15px;line-height:1.35}
- .profile-votes .link{margin-top:9px!important}
- .vhead{display:block}
- .vhead>div{min-width:0}
- .vhead button{margin-top:10px;width:auto}
- .source{overflow-wrap:anywhere}
-}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
 
-
-@media(max-width:480px){
- #profile{width:100%!important;max-width:100%!important;padding:16px!important;overflow:hidden!important}
- #profile h2{font-size:25px!important;line-height:1.2}
- #profile .profile-votes>div{width:100%!important;max-width:100%!important}
- #profile .profile-votes>div>div{max-width:100%!important}
- #profile .profile-votes a.link{max-width:100%;white-space:normal}
-}
-
-/* FINAL MOBILE LAYOUT SAFETY */
-@media (max-width: 800px){
-  .wrap, main, .section, #tds, #profile, #votes {width:100%;max-width:100%;min-width:0}
-  .grid{display:grid!important;grid-template-columns:1fr!important;width:100%!important}
-  .td,.card{width:100%!important;min-width:0!important;max-width:100%!important}
-  #profile{display:none;width:100%!important;max-width:100%!important;min-width:0!important;
-           margin:20px 0 0!important;padding:18px!important;overflow:hidden!important}
-  #profile *{max-width:100%;min-width:0}
-  #profile .profile-votes>div{width:100%!important;min-width:0!important}
-  #profile .profile-votes .row{
-    display:flex!important;flex-wrap:nowrap!important;
-    width:100%!important;min-width:0!important;
-  }
-  #profile .profile-votes .row>span:first-child{
-    flex:1 1 auto!important;min-width:0!important;
-    overflow-wrap:anywhere!important;word-break:normal!important;
-  }
-  #profile .profile-votes .row>span:last-child{flex:0 0 auto!important}
-  #profile .profile-photo{width:90px!important;height:90px!important}
-  #profile .initial{width:90px!important;height:90px!important}
-  .source{width:100%!important;max-width:100%!important;overflow-wrap:anywhere!important}
-  .link,button{max-width:100%!important;white-space:normal!important}
-}
-
-/* HARD FIX: profile must never inherit a narrow grid/flex column */
-#profile{
- display:block;
- grid-column:1 / -1 !important;
- width:100% !important;
- max-width:none !important;
- min-width:0 !important;
- float:none !important;
- clear:both !important;
-}
-#profile > *{
- width:100% !important;
- max-width:100% !important;
- min-width:0 !important;
- float:none !important;
-}
-#profile > .profile-photo,
-#profile > .initial{
- width:90px !important;
- height:90px !important;
-}
-#profile .row{
- width:100% !important;
- display:flex !important;
- flex-direction:row !important;
- justify-content:space-between !important;
- align-items:flex-start !important;
- flex-wrap:wrap !important;
-}
-#profile .profile-votes > div{
- width:100% !important;
-}
-#profile .profile-votes > div > div:first-child{
- width:100% !important;
- display:flex !important;
- flex-direction:row !important;
- justify-content:space-between !important;
- align-items:flex-start !important;
- gap:12px !important;
-}
-#profile .profile-votes > div > div:first-child > div:first-child{
- flex:1 1 auto !important;
- width:auto !important;
- min-width:0 !important;
-}
-#profile .profile-votes > div > div:first-child > div:last-child{
- flex:0 0 auto !important;
- width:auto !important;
-}
-
-/* FINAL FIX FOR EXPANDED VOTE DETAILS */
-.vote{
-  display:block!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  clear:both!important;
-  overflow:hidden!important;
-}
-.vote .vhead{
-  width:100%!important;
-  max-width:100%!important;
-}
-.vote .votes{
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  clear:both!important;
-  overflow:hidden!important;
-  position:static!important;
-}
-.vote .votes .row{
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  display:flex!important;
-  clear:both!important;
-}
-.vote .votes .source{
-  display:block!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  clear:both!important;
-  float:none!important;
-  overflow-wrap:anywhere!important;
-}
-.vote .votes .link{
-  display:inline-block!important;
-  width:auto!important;
-  max-width:100%!important;
-  clear:both!important;
-  float:none!important;
-}
+.td-photo{width:46px;height:46px;border-radius:50%;object-fit:cover;display:block;margin-bottom:12px;background:#e8f0f7}
+.profile-photo{width:96px;height:96px;border-radius:50%;object-fit:cover;display:block;margin-bottom:14px;background:#e8f0f7}
+.profile-vote-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-top:1px solid #eef0f2;font-size:14px}
+.profile-vote-title{min-width:0;overflow-wrap:anywhere;line-height:1.4}
+.profile-vote-choice{flex:0 0 auto;white-space:nowrap;font-weight:700}
+.profile-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
 @media(max-width:720px){
-  .vote .vhead{
-    display:block!important;
-  }
-  .vote .vhead button{
-    display:inline-block!important;
-    margin-top:10px!important;
-  }
-  .vote .votes .row{
-    display:flex!important;
-    flex-wrap:nowrap!important;
-  }
+ .profile-vote-row{font-size:14px}
+ .profile-vote-title{max-width:calc(100% - 58px)}
+ .profile-actions .link,.profile-actions .close{margin-top:0}
 }
 </style>
 </head>
@@ -198,7 +57,7 @@ footer{max-width:980px;margin:auto;padding:0 18px 35px;color:var(--muted);font-s
 <div class="section">
 <h2>Your TDs</h2>
 <div id="tds" class="grid"></div>
-<div id="profile" style="display:none;width:100%;max-width:100%;margin-top:20px;background:#fff;border:1px solid #dfe4ea;border-radius:14px;padding:20px;overflow:hidden"></div>
+<div id="profile" style="display:none;margin-top:20px;background:#fff;border:1px solid #dfe4ea;border-radius:14px;padding:20px"></div>
 </div>
 
 <div class="section">
@@ -243,19 +102,6 @@ function unwrapMember(x){
      if(name&&!constituencies.includes(name)) constituencies.push(name);
    });
  }catch(e){}
- const photo =
-   m.image?.uri ||
-   m.image?.url ||
-   m.image?.href ||
-   m.photo?.uri ||
-   m.photo?.url ||
-   m.photo?.href ||
-   m.imageUrl ||
-   m.photoUrl ||
-   m.profileImage ||
-   m.profilePhoto ||
-   "";
-
  return{
    name:m.fullName||m.showAs||"Unknown member",
    party,
@@ -263,7 +109,10 @@ function unwrapMember(x){
    constituencies,
    memberCode:m.memberCode||m.id||"",
    email:m.email||m.contactDetails?.email||m.contact?.email||"",
-   photo,
+   photo:
+     m.image?.uri||m.image?.url||m.image?.href||
+     m.photo?.uri||m.photo?.url||m.photo?.href||
+     m.imageUrl||m.photoUrl||m.profileImage||m.profilePhoto||"",
    role:"TD"
  };
 }
@@ -373,13 +222,6 @@ function memberVoteFor(division,member){
  return"Not recorded";
 }
 
-/* Link to the official Dáil debate for the division date */
-function officialDebateUrl(date){
- const match=String(date||"").match(/(\d{4})-(\d{2})-(\d{2})/);
- if(!match)return"https://www.oireachtas.ie/en/debates/";
- return`https://www.oireachtas.ie/en/debates/debate/dail/${match[1]}-${match[2]}-${match[3]}/`;
-}
-
 async function loadLiveData(){
  try{
    const [memberResponse,voteResponse]=await Promise.all([
@@ -427,18 +269,22 @@ function initials(name){
  return String(name||"").split(" ").map(x=>x.replace(/[^A-Za-zÁÉÍÓÚáéíóú]/g,"")[0]).filter(Boolean).slice(0,2).join("");
 }
 
+
 function safePhotoUrl(url){
  const s=String(url||"").trim();
  return /^https?:\/\//i.test(s) ? s : "";
 }
 
-function memberPhotoMarkup(t, profile=false){
+function memberPhotoMarkup(t,profile=false){
  const photo=safePhotoUrl(t.photo);
- const cls=profile?"profile-photo":"td-photo";
  if(photo){
-   return `<img class="${cls}" src="${photo}" alt="${t.name} TD" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none">${initials(t.name)}</div>`;
+   const cls=profile?"profile-photo":"td-photo";
+   return `<img class="${cls}" src="${photo}" alt="${t.name} TD" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="initial" style="display:none${profile?";width:96px;height:96px;font-size:24px":""}">${initials(t.name)}</div>`;
  }
- return `<div class="initial${profile ? '" style="width:110px;height:110px;font-size:30px;margin-bottom:14px' : '"'}>${initials(t.name)}</div>`;
+ if(profile){
+   return `<div class="initial" style="width:96px;height:96px;font-size:24px">${initials(t.name)}</div>`;
+ }
+ return `<div class="initial">${initials(t.name)}</div>`;
 }
 
 /* TD CARDS + PROFILE */
@@ -446,9 +292,9 @@ function renderTDs(){
  const list=getDisplayedTDs();
  document.getElementById("tds").innerHTML=
  list.map((t,i)=>`
-   <div class="card td" style="display:block;width:100%;min-width:0" onclick="showProfile(${i})">
+   <div class="card td" onclick="showProfile(${i})">
      ${memberPhotoMarkup(t)}
-     <h3 style="overflow-wrap:anywhere">${t.name} TD</h3>
+     <h3>${t.name} TD</h3>
      <div class="muted">${t.party}</div>
      <span class="pill">${t.constituency}</span>
    </div>
@@ -464,7 +310,6 @@ function showProfile(index){
  const profile=document.getElementById("profile");
  profile.style.display="block";
 
-
  const recentVotes=votes.slice(0,20);
 
  profile.innerHTML=`
@@ -475,9 +320,9 @@ function showProfile(index){
 
    <div style="margin-top:18px;padding-top:14px;border-top:1px solid #eef0f2">
      <h3>Member details</h3>
-     <div class="row"><span>Constituency</span><strong>${t.constituency}</strong></div>
-     ${t.email ? `<div class="row"><span>Email</span><a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700">${t.email}</a></div>` : `<div class="row"><span>Email</span><span class="muted">Not supplied by the Oireachtas data feed</span></div>`}
-     <div class="row"><span>Role</span><span>${t.role}</span></div>
+     <div class="profile-vote-row"><span>Constituency</span><strong>${t.constituency}</strong></div>
+     ${t.email ? `<div class="profile-vote-row"><span>Email</span><a href="mailto:${t.email}" style="color:#1769aa;text-decoration:none;font-weight:700;overflow-wrap:anywhere">${t.email}</a></div>` : `<div class="profile-vote-row"><span>Email</span><span class="muted">Not supplied</span></div>`}
+     <div class="profile-vote-row"><span>Role</span><span>${t.role}</span></div>
    </div>
 
    <div class="profile-votes">
@@ -488,17 +333,7 @@ function showProfile(index){
        if(mv==="Tá")cls="yes";
        if(mv==="Níl")cls="no";
        if(mv==="Absent"||mv==="Abstained")cls="absent";
-       return `
-         <div style="padding:14px 0;border-top:1px solid #eef0f2;min-width:0">
-           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;min-width:0">
-             <div style="min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35">${v.title}</div>
-             <div class="${cls}" style="white-space:nowrap;flex:0 0 auto">${mv}</div>
-           </div>
-           <div style="margin-top:9px">
-             <a class="link" href="${officialDebateUrl(v.date)}" target="_blank" rel="noopener">Open official debate</a>
-           </div>
-         </div>
-       `;
+       return `<div class="profile-vote-row"><span class="profile-vote-title">${v.title}<span class="date" style="display:block;margin-top:3px">${v.date||""}</span></span><span class="profile-vote-choice ${cls}">${mv}</span></div>`;
      }).join("") : "<div class='muted'>No recent votes available.</div>"}
    </div>
 
@@ -507,17 +342,19 @@ function showProfile(index){
      This profile shows recorded votes found in the official Houses of the Oireachtas division data. A vote is shown as “Not recorded” when an individual vote is not present in the official division record.
    </div>
 
-   <a class="link" href="https://www.oireachtas.ie/en/members/" target="_blank">Official Oireachtas members</a>
-   <button class="close" onclick="closeProfile()">Close profile</button>
+   <div class="profile-actions">
+     <a class="link" href="https://www.oireachtas.ie/en/members/" target="_blank">Official Oireachtas members</a>
+     <a class="link" href="https://www.oireachtas.ie/en/debates/votes/" target="_blank">Official Oireachtas votes</a>
+     <button class="close" onclick="closeProfile()">Close profile</button>
+   </div>
  `;
 
- window.scrollTo({top:profile.offsetTop,left:0,behavior:"auto"});
+ profile.scrollIntoView({behavior:"auto",block:"start"});
 }
 
 function closeProfile(){
  const profile=document.getElementById("profile");
  profile.style.display="none";
-
  profile.innerHTML="";
 }
 
@@ -545,7 +382,7 @@ function renderVotes(){
          if(mv==="Tá")cls="yes";
          if(mv==="Níl")cls="no";
          if(mv==="Absent"||mv==="Abstained")cls="absent";
-         return `<div class="row"><span>${t.name}</span><span class="${cls}" style="white-space:nowrap">${mv}</span></div>`;
+         return `<div class="row"><span>${t.name}</span><span class="${cls}">${mv}</span></div>`;
        }).join("")}
        <div class="source">
          <strong>Official source:</strong>
