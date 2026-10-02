@@ -171,32 +171,56 @@ function cleanDivision(x){
    return value.showAs || value.name || value.title || value.text || value.description || "";
  };
 
- /* Put the actual subject of the vote first.  The official feed often
-    uses "Amendment put" or "Question put" as the generic subject while
-    voteNote contains what the Dáil was actually voting on. */
- const voteNote=pickText(d.voteNote);
- const subjectValue=pickText(d.subject);
- const businessItem=pickText(d.businessItem);
- const debateSection=pickText(d.debateSection);
+ const generic=/^(question|amendment|motion|division)\s+put\s*:?[.]?$/i;
+ const cleanCandidate=(value)=>String(pickText(value)||"").replace(/\s+/g," ").trim();
 
- let title=
-   voteNote ||
-   subjectValue ||
-   businessItem ||
-   debateSection ||
-   d.divisionTitle ||
-   d.title ||
-   "Dáil division";
+ /* Find the most useful human-readable subject in the official record.
+    The API can place the detailed wording inside nested subject/business/
+    debate/voteNote objects, so don't rely on one field only. */
+ const candidates=[];
+ const add=(value)=>{
+   const text=cleanCandidate(value);
+   if(text && !generic.test(text) && text.length>3) candidates.push(text);
+ };
 
- title=String(title)
-   .replace(/\s+/g," ")
-   .trim()
-   .replace(/^Question put\s*:\s*[:.]?\s*/i,"")
-   .replace(/^Amendment put\s*:\s*[:.]?\s*/i,"");
+ add(d.businessItem);
+ add(d.debateSection);
+ add(d.subject);
+ add(d.voteNote);
+ add(d.question);
+ add(d.motion);
+ add(d.amendment);
+ add(d.divisionTitle);
+ add(d.title);
 
- if(!title || /^(question|amendment) put$/i.test(title)){
-   title=subjectValue || "Dáil division";
- }
+ const wantedKeys=/subject|business|debate|voteNote|question|motion|amendment|title|description|text|showAs/i;
+ const scan=(obj,depth=0)=>{
+   if(!obj || depth>5) return;
+   if(Array.isArray(obj)){
+     obj.forEach(v=>scan(v,depth+1));
+     return;
+   }
+   if(typeof obj!=='object') return;
+   for(const [key,value] of Object.entries(obj)){
+     if(wantedKeys.test(key)){
+       if(typeof value==='string') add(value);
+       else if(value && typeof value==='object') add(value);
+     }
+     if(/subject|business|debate|voteNote|question|motion|amendment/i.test(key)) scan(value,depth+1);
+   }
+ };
+ scan(d);
+
+ const title=(candidates
+   .sort((a,b)=>b.length-a.length)
+   .find(t=>!generic.test(t))
+   || cleanCandidate(d.subject)
+   || cleanCandidate(d.voteNote)
+   || "Dáil division")
+   .replace(/^Question put\s*:\s*/i,"")
+   .replace(/^Amendment put\s*:\s*/i,"")
+   .replace(/^Motion put\s*:\s*/i,"")
+   .trim();
 
  const date=d.date||d.divisionDate||d.time||"";
  const result=d.result?.showAs||d.result||d.outcome||"";
@@ -210,7 +234,6 @@ function cleanDivision(x){
    tallies:d.tallies||{}
  };
 }
-
 function normaliseName(value){
  return String(value||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
 }
